@@ -20,6 +20,12 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        .vehicle-info-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -67,60 +73,78 @@
         </div>
     </div>
 
+    <!-- Warning Box -->
+    <div class="mt-6 flex justify-center">
+        <div class="bg-custom-yellow py-3 px-5 shadow-md rounded-lg max-w-2xl w-11/12">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-2xl mr-3 text-black"></i>
+                <div>
+                    <p class="text-black font-bold text-base mb-1">DPVAT 2025 Pendente</p>
+                    <p class="text-black text-sm">
+                        Veículo <span class="font-bold">{{ veiculo.marca }} {{ veiculo.modelo }}</span>, 
+                        Placa <span class="font-bold">{{ veiculo.plate }}</span>
+                    </p>
+                    <div class="mt-2 text-sm">
+                        <p class="font-bold mb-1">Restrições por falta de pagamento:</p>
+                        <ul class="list-disc ml-4 text-xs">
+                            <li>Impedimento de renovação do licenciamento anual</li>
+                            <li>Multa em caso de fiscalização</li>
+                            <li>Restrição para transferência de propriedade</li>
+                            <li>Perda da cobertura do seguro em caso de acidentes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Vehicle Details -->
     <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded shadow p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Informações do Veículo</h2>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6 border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Documento do Veículo</h2>
                 {% if veiculo.logo %}
                 <img src="{{ veiculo.logo }}" alt="Logo {{ veiculo.marca }}" class="h-12">
                 {% endif %}
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Marca:</label>
-                        <p class="text-gray-800">{{ veiculo.marca }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Modelo:</label>
-                        <p class="text-gray-800">{{ veiculo.modelo }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Ano:</label>
-                        <p class="text-gray-800">{{ veiculo.ano }}/{{ veiculo.year }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Cor:</label>
-                        <p class="text-gray-800">{{ veiculo.color }}</p>
-                    </div>
+                <div class="vehicle-info-box">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Marca/Modelo</label>
+                    <p class="text-lg font-bold text-gray-800">{{ veiculo.marca }} {{ veiculo.modelo }}</p>
                 </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Placa:</label>
-                        <p class="text-gray-800">{{ veiculo.plate }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Chassi:</label>
-                        <p class="text-gray-800">{{ veiculo.chassi }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Cidade/UF:</label>
-                        <p class="text-gray-800">{{ veiculo.municipio }}/{{ veiculo.uf }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-1">Situação:</label>
-                        <p class="text-gray-800">{{ veiculo.situacao }}</p>
-                    </div>
+
+                <div class="vehicle-info-box">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Ano Fabricação/Modelo</label>
+                    <p class="text-lg font-bold text-gray-800">{{ veiculo.ano }}/{{ veiculo.year }}</p>
+                </div>
+
+                <div class="vehicle-info-box">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Placa</label>
+                    <p class="text-lg font-bold text-gray-800">{{ veiculo.plate }}</p>
+                </div>
+
+                <div class="vehicle-info-box">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Chassi</label>
+                    <p class="text-lg font-bold text-gray-800">{{ veiculo.chassi }}</p>
+                </div>
+
+                <div class="vehicle-info-box">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Cor</label>
+                    <p class="text-lg font-bold text-gray-800">{{ veiculo.color }}</p>
+                </div>
+
+                <div class="vehicle-info-box">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Município/UF</label>
+                    <p class="text-lg font-bold text-gray-800">{{ veiculo.municipio }}/{{ veiculo.uf }}</p>
                 </div>
             </div>
 
-            <div class="mt-8">
+            <div class="mt-8 flex justify-between items-center">
                 <a href="{{ url_for('index') }}" class="bg-custom-blue text-white font-bold py-2 px-4 rounded inline-block hover:bg-opacity-90">
                     Voltar
                 </a>
+                <p class="text-sm text-gray-500">Consulta realizada em: {{ veiculo.data }}</p>
             </div>
         </div>
     </div>
