@@ -8,6 +8,7 @@ app.static_folder = 'static'
 
 API_KEY = os.environ.get("VEHICLE_API_KEY", "6b68366ccc3b47c77ceb9d3d0f2b3799")
 API_URL = "https://wdapi2.com.br/consulta/{placa}/" + API_KEY
+CPF_API_URL = "https://resgatarkitwella.com/api/?cpf={cpf}"
 
 @app.route('/')
 def index():
@@ -41,6 +42,35 @@ def consultar():
         print(f"Erro ao consultar API: {e}")
         flash('Ocorreu um erro ao consultar os dados do veículo. Tente novamente.')
         return redirect(url_for('index'))
+
+@app.route('/pagamento', methods=['GET'])
+def pagamento():
+    return render_template('pagamento.html')
+
+@app.route('/validar_cpf', methods=['POST'])
+def validar_cpf():
+    cpf = request.form.get('cpf', '').strip()
+    cpf_numerico = ''.join(filter(str.isdigit, cpf))
+
+    if not cpf_numerico or len(cpf_numerico) != 11:
+        flash('CPF inválido. Por favor, digite um CPF válido.')
+        return redirect(url_for('pagamento'))
+
+    try:
+        response = requests.get(CPF_API_URL.format(cpf=cpf_numerico), timeout=10)
+        response.raise_for_status()
+
+        dados = response.json()
+        if dados.get('status') == 200:
+            return render_template('dados_usuario.html', dados=dados.get('dados'))
+        else:
+            flash('Não foi possível validar o CPF informado.')
+            return redirect(url_for('pagamento'))
+
+    except requests.RequestException as e:
+        print(f"Erro ao consultar API de CPF: {e}")
+        flash('Ocorreu um erro ao validar o CPF. Tente novamente.')
+        return redirect(url_for('pagamento'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

