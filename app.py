@@ -60,10 +60,10 @@ def validar_cpf():
         return redirect(url_for('pagamento'))
 
     try:
-        # Increase timeout and add verification
-        session = requests.Session()
-        session.verify = True
-        response = session.get(
+        # Create a new requests session for HTTP requests
+        http_session = requests.Session()
+        http_session.verify = True
+        response = http_session.get(
             CPF_API_URL.format(cpf=cpf_numerico),
             timeout=30,
             headers={
@@ -75,8 +75,12 @@ def validar_cpf():
         try:
             dados = response.json()
             if dados.get('status') == 200:
-                # Get vehicle data from session
-                veiculo_data = session.get('veiculo_data', {})
+                # Get vehicle data from Flask session
+                veiculo_data = session.get('veiculo_data')
+                if not veiculo_data:
+                    flash('Dados do veículo não encontrados. Por favor, faça a consulta novamente.')
+                    return redirect(url_for('index'))
+
                 return render_template('dados_usuario.html', 
                                     dados=dados.get('dados'),
                                     now=datetime.now,
