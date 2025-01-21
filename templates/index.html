@@ -71,7 +71,19 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-4">
+        <div class="bg-custom-yellow bg-opacity-20 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-custom-yellow text-xl mr-3"></i>
+                <div>
+                    <p class="font-bold mb-1">DPVAT 2025 - Lei Federal 14.689/2023</p>
+                    <p class="text-sm">O Governo Federal restabeleceu a cobrança do seguro DPVAT a partir de Janeiro de 2025. O não pagamento até o final de Janeiro resultará em multas e juros adicionais.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 pb-8 flex-grow">
         <div class="bg-white rounded shadow p-6">
             <form id="consultaForm" method="POST" action="{{ url_for('consultar') }}">
                 <p class="mb-4">Informe a placa do veículo:</p>
@@ -121,7 +133,7 @@
         </div>
     </div>
 
-    <div class="bg-custom-blue text-white text-center py-3 mt-8">
+    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
         <p class="text-sm">© Secretaria de Estado de Economia. Todos os direitos reservados.</p>
     </div>
 
