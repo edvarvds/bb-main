@@ -16,8 +16,14 @@ def index():
 @app.route('/consultar', methods=['POST'])
 def consultar():
     placa = request.form.get('placa', '').strip().upper()
+    exercicio = request.form.get('exercicio')
+
     if not placa:
         flash('Por favor, informe a placa do veículo.')
+        return redirect(url_for('index'))
+
+    if not placa.isalnum() or len(placa) != 7:
+        flash('Formato de placa inválido. Use o formato AAANNNN ou AAAAANN.')
         return redirect(url_for('index'))
 
     try:

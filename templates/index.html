@@ -94,6 +94,7 @@
                                name="placa"
                                type="text" 
                                maxlength="7"
+                               pattern="[A-Z0-9]{7}"
                                required />
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                             <i class="fas fa-car text-gray-500"></i>
@@ -106,7 +107,7 @@
                         <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                                 id="exercicio"
                                 name="exercicio">
-                            <option>2025</option>
+                            <option value="2025">2025</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <i class="fas fa-chevron-down"></i>
@@ -114,10 +115,19 @@
                     </div>
                     <p class="text-gray-700 text-xs italic">Escolha o exercício.</p>
                 </div>
-                <button type="submit" class="bg-custom-blue hover:bg-custom-blue text-white font-bold py-2 px-4 rounded w-full">
+                <button type="submit" class="bg-custom-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full">
                     Consultar
                 </button>
             </form>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                            <span class="block sm:inline">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </div>
     </div>
 
