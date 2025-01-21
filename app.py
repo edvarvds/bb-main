@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, flash
 import os
 import requests
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
@@ -62,7 +63,9 @@ def validar_cpf():
 
         dados = response.json()
         if dados.get('status') == 200:
-            return render_template('dados_usuario.html', dados=dados.get('dados'))
+            return render_template('dados_usuario.html', 
+                                dados=dados.get('dados'),
+                                now=datetime.now)
         else:
             flash('Não foi possível validar o CPF informado.')
             return redirect(url_for('pagamento'))
