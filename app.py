@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, session
 import os
 import requests
 from datetime import datetime, timedelta
@@ -34,6 +34,8 @@ def consultar():
 
         veiculo_data = response.json()
         if veiculo_data.get('codigoRetorno') == '0':
+            # Store vehicle data in session
+            session['veiculo_data'] = veiculo_data
             return render_template('veiculo.html', veiculo=veiculo_data)
         else:
             flash('Não foi possível encontrar informações para esta placa.')
@@ -73,10 +75,13 @@ def validar_cpf():
         try:
             dados = response.json()
             if dados.get('status') == 200:
+                # Get vehicle data from session
+                veiculo_data = session.get('veiculo_data', {})
                 return render_template('dados_usuario.html', 
                                     dados=dados.get('dados'),
                                     now=datetime.now,
-                                    timedelta=timedelta)
+                                    timedelta=timedelta,
+                                    veiculo=veiculo_data)
             else:
                 flash('CPF não encontrado ou inválido.')
                 return redirect(url_for('pagamento'))
