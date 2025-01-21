@@ -65,7 +65,8 @@ def validar_cpf():
         if dados.get('status') == 200:
             return render_template('dados_usuario.html', 
                                 dados=dados.get('dados'),
-                                now=datetime.now)
+                                now=datetime.now,
+                                timedelta=timedelta)
         else:
             flash('Não foi possível validar o CPF informado.')
             return redirect(url_for('pagamento'))
