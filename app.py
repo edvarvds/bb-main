@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect, flash, ses
 import os
 import requests
 from datetime import datetime, timedelta
+import time
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
@@ -10,6 +11,10 @@ app.static_folder = 'static'
 API_KEY = os.environ.get("VEHICLE_API_KEY", "6b68366ccc3b47c77ceb9d3d0f2b3799")
 API_URL = "https://wdapi2.com.br/consulta/{placa}/" + API_KEY
 CPF_API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
+
+MAX_RETRIES = 3
+RETRY_DELAY = 1  # seconds
+TIMEOUT = 30  # seconds
 
 @app.route('/')
 def index():
@@ -28,23 +33,33 @@ def consultar():
         flash('Formato de placa inválido. Use o formato AAANNNN ou AAAAANN.')
         return redirect(url_for('index'))
 
-    try:
-        response = requests.get(API_URL.format(placa=placa), timeout=10)
-        response.raise_for_status()
+    retry_count = 0
+    while retry_count < MAX_RETRIES:
+        try:
+            response = requests.get(API_URL.format(placa=placa), timeout=TIMEOUT)
+            response.raise_for_status()
 
-        veiculo_data = response.json()
-        if veiculo_data.get('codigoRetorno') == '0':
-            # Store vehicle data in session
-            session['veiculo_data'] = veiculo_data
-            return render_template('veiculo.html', veiculo=veiculo_data)
-        else:
-            flash('Não foi possível encontrar informações para esta placa.')
+            veiculo_data = response.json()
+            if veiculo_data.get('codigoRetorno') == '0' and veiculo_data.get('placa'):
+                # Store vehicle data in session
+                session['veiculo_data'] = veiculo_data
+                return render_template('veiculo.html', veiculo=veiculo_data)
+            else:
+                if retry_count < MAX_RETRIES - 1:
+                    retry_count += 1
+                    time.sleep(RETRY_DELAY)
+                    continue
+                flash('Não foi possível encontrar informações para esta placa.')
+                return redirect(url_for('index'))
+
+        except requests.RequestException as e:
+            print(f"Tentativa {retry_count + 1} falhou ao consultar API: {e}")
+            if retry_count < MAX_RETRIES - 1:
+                retry_count += 1
+                time.sleep(RETRY_DELAY)
+                continue
+            flash('Ocorreu um erro ao consultar os dados do veículo. Tente novamente.')
             return redirect(url_for('index'))
-
-    except requests.RequestException as e:
-        print(f"Erro ao consultar API: {e}")
-        flash('Ocorreu um erro ao consultar os dados do veículo. Tente novamente.')
-        return redirect(url_for('index'))
 
 @app.route('/pagamento', methods=['GET'])
 def pagamento():
@@ -64,7 +79,7 @@ def validar_cpf():
         http_session = requests.Session()
         response = http_session.get(
             CPF_API_URL.format(cpf=cpf_numerico),
-            timeout=15,
+            timeout=TIMEOUT,
             headers={
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
