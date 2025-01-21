@@ -51,7 +51,7 @@
         }
     </script>
 </head>
-<body class="relative min-h-screen bg-gray-50 pb-20">
+<body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->
     <div class="bg-white py-4">
         <div class="container mx-auto px-4">
@@ -184,9 +184,9 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-custom-blue text-white text-center py-3 fixed bottom-0 w-full">
+    <div class="bg-custom-blue text-white text-center py-3 mt-8">
         <p class="text-sm">© Secretaria de Estado de Economia. Todos os direitos reservados.</p>
-    </footer>
+    </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
