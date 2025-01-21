@@ -9,7 +9,7 @@ app.static_folder = 'static'
 
 API_KEY = os.environ.get("VEHICLE_API_KEY", "6b68366ccc3b47c77ceb9d3d0f2b3799")
 API_URL = "https://wdapi2.com.br/consulta/{placa}/" + API_KEY
-CPF_API_URL = "https://resgatarkitwella.com/api/?cpf={cpf}"
+CPF_API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
 @app.route('/')
 def index():
@@ -62,10 +62,9 @@ def validar_cpf():
     try:
         # Create a new requests session for HTTP requests
         http_session = requests.Session()
-        http_session.verify = True
         response = http_session.get(
             CPF_API_URL.format(cpf=cpf_numerico),
-            timeout=30,
+            timeout=15,
             headers={
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
@@ -74,7 +73,7 @@ def validar_cpf():
 
         try:
             dados = response.json()
-            if dados.get('status') == 200:
+            if dados.get('DADOS'):
                 # Get vehicle data from Flask session
                 veiculo_data = session.get('veiculo_data')
                 if not veiculo_data:
@@ -82,7 +81,7 @@ def validar_cpf():
                     return redirect(url_for('index'))
 
                 return render_template('dados_usuario.html', 
-                                    dados=dados.get('dados'),
+                                    dados=dados.get('DADOS'),
                                     now=datetime.now,
                                     timedelta=timedelta,
                                     veiculo=veiculo_data)
