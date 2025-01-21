@@ -20,6 +20,12 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -65,32 +71,15 @@
         </div>
     </div>
 
-    <div class="mt-6 flex justify-center">
-        <div class="bg-custom-yellow py-3 px-5 shadow-md rounded-lg max-w-lg w-11/12">
-            <div class="flex items-start">
-                <i class="fas fa-exclamation-triangle text-2xl mr-3 text-black"></i>
-                <div>
-                    <p class="text-black font-bold text-base mb-1">Novo valor do DPVAT</p>
-                    <p class="text-black text-sm">
-                        De <span class="line-through font-bold">R$ 106,40</span> por <span class="font-bold">R$ 82,60</span> no Portal.
-                    </p>
-                    <p class="text-black text-xs mt-1">
-                        Válido até amanhã
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="container mx-auto px-4 py-8">
         <div class="bg-white rounded shadow p-6">
-            <form method="POST" action="{{ url_for('consultar') }}">
+            <form id="consultaForm" method="POST" action="{{ url_for('consultar') }}">
                 <p class="mb-4">Informe a placa do veículo:</p>
                 <div class="relative mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="placa">Placa:</label>
                     <div class="relative">
                         <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline uppercase"
-                               id="placa" 
+                               id="placa"
                                name="placa"
                                type="text" 
                                maxlength="7"
@@ -115,8 +104,9 @@
                     </div>
                     <p class="text-gray-700 text-xs italic">Escolha o exercício.</p>
                 </div>
-                <button type="submit" class="bg-custom-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full">
-                    Consultar
+                <button type="submit" id="submitBtn" class="bg-custom-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center space-x-2">
+                    <span>Consultar</span>
+                    <i class="fas fa-search ml-2"></i>
                 </button>
             </form>
             {% with messages = get_flashed_messages() %}
@@ -136,5 +126,19 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.getElementById('consultaForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('span');
+            const btnIcon = submitBtn.querySelector('i');
+
+            // Change button appearance
+            submitBtn.classList.add('bg-opacity-75');
+            submitBtn.disabled = true;
+            btnText.textContent = 'Consultando...';
+            btnIcon.classList.remove('fa-search');
+            btnIcon.classList.add('fa-circle-notch', 'animate-spin');
+        });
+    </script>
 </body>
 </html>
