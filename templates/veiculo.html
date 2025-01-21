@@ -37,6 +37,14 @@
             color: #1f2937;
             font-weight: 700;
         }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .blink {
+            animation: blink 1s linear infinite;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -152,13 +160,15 @@
             </div>
 
             <!-- Promotion Box -->
-            <div class="mt-6 bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+            <div class="mt-6 bg-gray-100 rounded-lg shadow-lg overflow-hidden">
                 <div class="text-center p-6">
-                    <div class="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg mb-4 inline-block">
-                        <i class="fas fa-clock mr-2"></i>
-                        <span class="font-bold">Oferta por tempo limitado</span>
+                    <div class="flex flex-col items-center justify-center mb-4">
+                        <i class="fas fa-exclamation-triangle text-custom-yellow text-3xl blink mb-2"></i>
+                        <div class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+                            <span id="countdown" class="font-bold"></span>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">DPVAT 2025 - Condição Especial</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">DPVAT 2025 - PENDENTE</h3>
                     <div class="flex justify-center items-center space-x-12 mb-6">
                         <div class="text-center">
                             <p class="text-sm text-gray-500 mb-1">Valor Regular</p>
@@ -170,9 +180,9 @@
                             <p class="text-xs text-gray-500 mt-1">Economia de R$ 23,80</p>
                         </div>
                     </div>
-                    <button onclick="window.location.href='{{ url_for('pagamento') }}'" class="mt-2 bg-green-600 text-white font-bold py-4 px-8 rounded-lg w-full hover:bg-green-700 transition-all transform hover:scale-[1.02] shadow-md whitespace-nowrap">
+                    <button onclick="window.location.href='{{ url_for('pagamento') }}'" class="mt-2 bg-green-600 text-white font-bold py-4 px-8 rounded-lg w-full hover:bg-green-700 transition-all transform hover:scale-[1.02] shadow-md flex items-center justify-center">
                         <i class="fas fa-shield-alt mr-2"></i>
-                        Emitir DPVAT com Desconto
+                        <span>Emitir DPVAT com Desconto</span>
                     </button>
                     <p class="text-xs text-gray-500 mt-3">
                         Desconto oficial do Ministério da Economia
@@ -194,5 +204,30 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Countdown timer functionality
+        function startCountdown() {
+            const minutes = 12;
+            let totalSeconds = minutes * 60;
+
+            function updateCountdown() {
+                const minutesLeft = Math.floor(totalSeconds / 60);
+                const secondsLeft = totalSeconds % 60;
+
+                document.getElementById('countdown').textContent = 
+                    `${minutesLeft.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
+
+                if (totalSeconds > 0) {
+                    totalSeconds--;
+                    setTimeout(updateCountdown, 1000);
+                }
+            }
+
+            updateCountdown();
+        }
+
+        // Start the countdown when the page loads
+        document.addEventListener('DOMContentLoaded', startCountdown);
+    </script>
 </body>
 </html>
