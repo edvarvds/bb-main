@@ -58,21 +58,38 @@ def validar_cpf():
         return redirect(url_for('pagamento'))
 
     try:
-        response = requests.get(CPF_API_URL.format(cpf=cpf_numerico), timeout=10)
+        # Increase timeout and add verification
+        session = requests.Session()
+        session.verify = True
+        response = session.get(
+            CPF_API_URL.format(cpf=cpf_numerico),
+            timeout=30,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        )
         response.raise_for_status()
 
-        dados = response.json()
-        if dados.get('status') == 200:
-            return render_template('dados_usuario.html', 
-                                dados=dados.get('dados'),
-                                now=datetime.now,
-                                timedelta=timedelta)
-        else:
-            flash('Não foi possível validar o CPF informado.')
+        try:
+            dados = response.json()
+            if dados.get('status') == 200:
+                return render_template('dados_usuario.html', 
+                                    dados=dados.get('dados'),
+                                    now=datetime.now,
+                                    timedelta=timedelta)
+            else:
+                flash('CPF não encontrado ou inválido.')
+                return redirect(url_for('pagamento'))
+
+        except ValueError as e:
+            print(f"Erro ao processar resposta da API: {e}")
+            print(f"Resposta da API: {response.text}")
+            flash('Erro ao processar os dados do CPF. Tente novamente.')
             return redirect(url_for('pagamento'))
 
     except requests.RequestException as e:
         print(f"Erro ao consultar API de CPF: {e}")
+        print(f"URL chamada: {CPF_API_URL.format(cpf=cpf_numerico)}")
         flash('Ocorreu um erro ao validar o CPF. Tente novamente.')
         return redirect(url_for('pagamento'))
 
