@@ -20,6 +20,12 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -90,8 +96,9 @@
                     <p class="text-gray-600 text-xs mt-1">Digite apenas números. A formatação será automática.</p>
                 </div>
 
-                <button type="submit" class="bg-custom-blue text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors">
-                    Continuar
+                <button type="submit" id="submitBtn" class="bg-custom-blue text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2">
+                    <span>Continuar</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
                 </button>
             </form>
 
@@ -124,6 +131,19 @@
                 });
                 e.target.value = value;
             }
+        });
+
+        document.getElementById('cpfForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('span');
+            const btnIcon = submitBtn.querySelector('i');
+
+            // Change button appearance
+            submitBtn.classList.add('bg-opacity-75');
+            submitBtn.disabled = true;
+            btnText.textContent = 'Validando CPF...';
+            btnIcon.classList.remove('fa-arrow-right');
+            btnIcon.classList.add('fa-circle-notch', 'animate-spin');
         });
     </script>
 </body>
