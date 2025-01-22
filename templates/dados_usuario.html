@@ -91,7 +91,7 @@
                     <!-- CPF -->
                     <div class="border rounded-lg p-3">
                         <label class="block text-sm font-medium text-gray-600">CPF</label>
-                        <p class="mt-1 text-gray-900 font-bold">{{ dados.cpf }}</p>
+                        <p class="mt-1 text-gray-900 font-bold">{{ '{}.{}.{}-{}'.format(dados.cpf[:3], dados.cpf[3:6], dados.cpf[6:9], dados.cpf[9:]) }}</p>
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@
                     </div>
                     <div class="border rounded-lg p-3">
                         <label class="block text-sm font-medium text-gray-600">Telefone</label>
-                        <p class="mt-1 text-gray-900 font-bold">{{ dados.phone }}</p>
+                        <p class="mt-1 text-gray-900 font-bold">{{ '({}) {}-{}'.format(dados.phone[:2], dados.phone[2:7], dados.phone[7:]) if dados.phone|length == 11 else '({}) {}-{}'.format(dados.phone[:2], dados.phone[2:6], dados.phone[6:]) }}</p>
                     </div>
                 </div>
 

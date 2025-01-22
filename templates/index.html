@@ -97,8 +97,9 @@
                                id="cpf"
                                name="cpf"
                                type="text" 
-                               maxlength="11"
-                               pattern="[0-9]{11}"
+                               pattern="[0-9]*"
+                               inputmode="numeric"
+                               maxlength="14"
                                placeholder="Digite apenas números"
                                required />
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -133,6 +134,10 @@
             const submitBtn = document.getElementById('submitBtn');
             const btnText = submitBtn.querySelector('span');
             const btnIcon = submitBtn.querySelector('i');
+            const cpfInput = document.getElementById('cpf');
+
+            // Remove pontuação antes de enviar
+            cpfInput.value = cpfInput.value.replace(/\D/g, '');
 
             // Change button appearance
             submitBtn.classList.add('bg-opacity-75');
@@ -147,6 +152,18 @@
         cpfInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length > 11) value = value.slice(0, 11);
+
+            // Aplica a máscara xxx.xxx.xxx-xx
+            if (value.length >= 3) {
+                value = value.replace(/^(\d{3})/, '$1.');
+                if (value.length >= 7) {
+                    value = value.replace(/^(\d{3}\.)(\d{3})/, '$1$2.');
+                    if (value.length >= 11) {
+                        value = value.replace(/^(\d{3}\.)(\d{3}\.)(\d{3})/, '$1$2$3-');
+                    }
+                }
+            }
+
             e.target.value = value;
         });
     </script>
