@@ -28,8 +28,10 @@ def index():
 @app.route('/consultar_cpf', methods=['POST'])
 def consultar_cpf():
     cpf = request.form.get('cpf', '').strip()
+    # Primeiro remove toda a pontuação do CPF
     cpf_numerico = ''.join(filter(str.isdigit, cpf))
 
+    # Depois valida o comprimento
     if not cpf_numerico or len(cpf_numerico) != 11:
         flash('CPF inválido. Por favor, digite um CPF válido.')
         return redirect(url_for('index'))
