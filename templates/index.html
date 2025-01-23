@@ -160,21 +160,52 @@
         // Máscara para CPF
         const cpfInput = document.getElementById('cpf');
         cpfInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
+            let value = e.target.value;
 
-            // Aplica a máscara xxx.xxx.xxx-xx
-            if (value.length >= 3) {
-                value = value.replace(/^(\d{3})/, '$1.');
-                if (value.length >= 7) {
-                    value = value.replace(/^(\d{3}\.)(\d{3})/, '$1$2.');
-                    if (value.length >= 11) {
-                        value = value.replace(/^(\d{3}\.)(\d{3}\.)(\d{3})/, '$1$2$3-');
-                    }
+            // Remove tudo que não é número
+            value = value.replace(/\D/g, '');
+
+            // Limita a 11 dígitos
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+
+            // Aplica a máscara
+            if (value.length > 0) {
+                // Primeiro bloco (xxx)
+                if (value.length <= 3) {
+                    value = value;
+                }
+                // Segundo bloco (xxx.xxx)
+                else if (value.length <= 6) {
+                    value = value.slice(0, 3) + '.' + value.slice(3);
+                }
+                // Terceiro bloco (xxx.xxx.xxx)
+                else if (value.length <= 9) {
+                    value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6);
+                }
+                // Completo (xxx.xxx.xxx-xx)
+                else {
+                    value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6, 9) + '-' + value.slice(9);
                 }
             }
 
+            // Atualiza o valor do input
             e.target.value = value;
+        });
+
+        // Adiciona listener para o backspace
+        cpfInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.slice(0, -1);
+                    let event = new Event('input');
+                    this.value = value;
+                    this.dispatchEvent(event);
+                }
+                e.preventDefault();
+            }
         });
     </script>
 </body>
