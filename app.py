@@ -92,27 +92,33 @@ class For4PaymentsAPI:
                 payment_data = response.json()
                 # Map For4Payments status to our application status
                 status_mapping = {
-                    'pending': 'pending',
-                    'processing': 'pending',
-                    'approved': 'completed',
-                    'completed': 'completed',
-                    'paid': 'completed',
-                    'expired': 'failed',
-                    'failed': 'failed',
-                    'canceled': 'cancelled',
-                    'cancelled': 'cancelled'
+                    'PENDING': 'pending',
+                    'PROCESSING': 'pending',
+                    'APPROVED': 'completed',
+                    'COMPLETED': 'completed',
+                    'PAID': 'completed',
+                    'EXPIRED': 'failed',
+                    'FAILED': 'failed',
+                    'CANCELED': 'cancelled',
+                    'CANCELLED': 'cancelled'
                 }
 
-                current_status = payment_data.get('status', 'pending')
-                mapped_status = status_mapping.get(current_status.lower(), 'pending')
+                current_status = payment_data.get('status', 'PENDING')
+                mapped_status = status_mapping.get(current_status, 'pending')
+
+                logger.info(f"Payment {payment_id} status: {current_status} -> {mapped_status}")
 
                 return {
                     'status': mapped_status,
                     'pix_qr_code': payment_data.get('pixQrCode'),
                     'pix_code': payment_data.get('pixCode')
                 }
+            elif response.status_code == 404:
+                logger.warning(f"Payment {payment_id} not found")
+                return {'status': 'pending'}
             else:
-                logger.error(f"Failed to fetch payment status: {response.text}")
+                error_message = f"Failed to fetch payment status (Status: {response.status_code})"
+                logger.error(error_message)
                 return {'status': 'pending'}
 
         except Exception as e:
@@ -211,6 +217,10 @@ def check_payment(payment_id):
     except Exception as e:
         logger.error(f"Error checking payment status: {str(e)}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/obrigado')
+def obrigado():
+    return render_template('obrigado.html', current_year=datetime.now().year)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
