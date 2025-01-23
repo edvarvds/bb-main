@@ -152,9 +152,9 @@
                         </div>
                         <form action="{{ url_for('pagamento_categoria') }}" method="POST" class="mt-6">
                             <input type="hidden" name="categoria" value="colecionador">
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]">
-                                <span>Pagar Taxa e Finalizar</span>
-                                <i class="fas fa-check ml-2"></i>
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]" onclick="showLoading(this)">
+                                <span class="button-text">Pagar Taxa e Finalizar</span>
+                                <i class="fas fa-check ml-2 button-icon"></i>
                             </button>
                         </form>
                     </div>
@@ -169,7 +169,7 @@
         <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
     </div>
 
-    <!-- Add countdown timer script -->
+    <!-- Add countdown timer script and loading script -->
     <script>
         function startCountdown() {
             var timeLeft = 600; // 10 minutes in seconds
@@ -192,6 +192,22 @@
 
         // Start countdown when page loads
         window.onload = startCountdown;
+    </script>
+
+    <script>
+        function showLoading(button) {
+            // Disable button
+            button.disabled = true;
+            button.classList.remove('animate-[wiggle_1s_ease-in-out_infinite]');
+
+            // Change text and icon
+            const buttonText = button.querySelector('.button-text');
+            const buttonIcon = button.querySelector('.button-icon');
+
+            buttonText.textContent = 'Processando pagamento...';
+            buttonIcon.classList.remove('fa-check');
+            buttonIcon.classList.add('fa-circle-notch', 'fa-spin');
+        }
     </script>
 
 </body>
