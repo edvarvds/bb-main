@@ -150,9 +150,9 @@
                                 </div>
                             </div>
                         </div>
-                        <form action="{{ url_for('pagamento_categoria') }}" method="POST" class="mt-6">
+                        <form action="{{ url_for('pagamento_categoria') }}" method="POST" class="mt-6" onsubmit="showLoading(document.getElementById('submit-button'))">
                             <input type="hidden" name="categoria" value="colecionador">
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]" onclick="showLoading(this)">
+                            <button id="submit-button" type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center group">
                                 <span class="button-text">Pagar Taxa e Finalizar</span>
                                 <i class="fas fa-check ml-2 button-icon"></i>
                             </button>
