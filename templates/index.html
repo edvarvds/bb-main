@@ -144,6 +144,17 @@
             btnText.textContent = 'Consultando...';
             btnIcon.classList.remove('fa-search');
             btnIcon.classList.add('fa-circle-notch', 'animate-spin');
+
+            // Adiciona timeout para restaurar o botão em caso de erro
+            setTimeout(function() {
+                if (submitBtn.disabled) {
+                    submitBtn.classList.remove('bg-opacity-75');
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Consultar';
+                    btnIcon.classList.remove('fa-circle-notch', 'animate-spin');
+                    btnIcon.classList.add('fa-search');
+                }
+            }, 10000); // 10 segundos
         });
 
         // Máscara para CPF

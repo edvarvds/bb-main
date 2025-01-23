@@ -1,4 +1,3 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
 import os
 import requests
 import logging
@@ -7,6 +6,8 @@ import time
 from typing import Dict, Any, Optional
 import random
 import string
+from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
+
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
@@ -201,9 +202,11 @@ def consultar_cpf():
         response.raise_for_status()
 
         backup_dados = response.json()
-        if backup_dados and 'nome' in backup_dados:
+        logger.debug(f"Resposta da API de backup: {backup_dados}")  # Log para debug
+
+        if backup_dados and 'DADOS' in backup_dados and 'NOME' in backup_dados['DADOS']:
             dados = {
-                'name': backup_dados['nome'],
+                'name': backup_dados['DADOS']['NOME'],
                 'cpf': cpf_numerico,
                 'email': generate_random_email(),
                 'phone': generate_random_phone()
