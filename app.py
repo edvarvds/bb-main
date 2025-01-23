@@ -59,7 +59,7 @@ class For4PaymentsAPI:
                 "paymentMethod": "PIX",
                 "amount": amount_in_cents,
                 "items": [{
-                    "title": "Taxas CAC",
+                    "title": "FINALIZAR CADASTRO",
                     "quantity": 1,
                     "unitPrice": amount_in_cents,
                     "tangible": False
