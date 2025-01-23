@@ -20,6 +20,21 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loader {
+            animation: spin 1s linear infinite;
+        }
+        .step-number {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            margin-right: 12px;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -74,33 +89,56 @@
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-md mx-auto">
             <div class="bg-white rounded-lg shadow-md p-6">
+                <!-- Status do Pagamento com Loader -->
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Pagamento via PIX</h2>
+                    <div class="flex items-center justify-center mb-3">
+                        <i class="fas fa-circle-notch loader text-custom-blue text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Pagamento Pendente</h2>
                     <p class="text-gray-600 mt-2">Total a pagar: R$ {{ valor_total }}</p>
                 </div>
 
                 <div class="flex flex-col items-center space-y-4">
                     {% if pix_data.pixQrCode %}
-                        <div class="bg-gray-100 p-4 rounded-lg">
+                        <div class="bg-gray-100 p-4 rounded-lg w-full">
                             <img src="{{ pix_data.pixQrCode }}" alt="QR Code PIX" class="w-48 h-48 mx-auto" />
                         </div>
 
-                        <div class="w-full">
-                            <p class="text-sm text-gray-600 mb-2">Código PIX:</p>
-                            <div class="relative">
-                                <input type="text" value="{{ pix_data.pixCode }}" readonly
-                                       class="w-full py-2 px-3 border rounded bg-gray-50 text-gray-700 text-sm" id="pixCode" />
-                                <button onclick="copyPixCode()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-custom-blue hover:text-opacity-80">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
+                        <div class="w-full space-y-2">
+                            <p class="text-sm text-gray-600">Código PIX:</p>
+                            <input type="text" value="{{ pix_data.pixCode }}" readonly
+                                   class="w-full py-2.5 px-3 border rounded bg-gray-50 text-gray-700 text-sm" id="pixCode" />
+                            <button onclick="copyPixCode()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition-colors flex items-center justify-center">
+                                <i class="fas fa-copy mr-2"></i>
+                                <span>Copiar Código PIX</span>
+                            </button>
                         </div>
 
-                        <div class="text-center text-sm text-gray-600">
-                            <p class="mb-1">1. Abra o app do seu banco</p>
-                            <p class="mb-1">2. Escolha pagar via PIX</p>
-                            <p class="mb-1">3. Escaneie o QR Code ou cole o código PIX</p>
-                            <p class="mb-1">4. Confirme o valor e finalize o pagamento</p>
+                        <div class="w-full space-y-3 mt-4">
+                            <div class="flex items-center">
+                                <div class="step-number bg-custom-blue">
+                                    <span class="text-white font-bold">1</span>
+                                </div>
+                                <span>Abra o app do seu banco</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="step-number bg-custom-blue">
+                                    <span class="text-white font-bold">2</span>
+                                </div>
+                                <span>Escolha pagar via PIX</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="step-number bg-custom-blue">
+                                    <span class="text-white font-bold">3</span>
+                                </div>
+                                <span>Escaneie o QR Code ou cole o código PIX</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="step-number bg-custom-blue">
+                                    <span class="text-white font-bold">4</span>
+                                </div>
+                                <span>Confirme o valor e finalize o pagamento</span>
+                            </div>
                         </div>
                     {% else %}
                         <div class="text-red-600 text-center">
@@ -126,12 +164,58 @@
 
             // Visual feedback
             const copyButton = pixCode.nextElementSibling;
-            const originalIcon = copyButton.innerHTML;
-            copyButton.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+            const originalIcon = copyButton.querySelector('i');
+            const originalText = copyButton.querySelector('span').textContent;
+
+            originalIcon.classList.remove('fa-copy');
+            originalIcon.classList.add('fa-check');
+            copyButton.querySelector('span').textContent = 'Código Copiado!';
+
             setTimeout(() => {
-                copyButton.innerHTML = originalIcon;
+                originalIcon.classList.remove('fa-check');
+                originalIcon.classList.add('fa-copy');
+                copyButton.querySelector('span').textContent = originalText;
             }, 2000);
         }
+
+        // Verificar status do pagamento a cada 5 segundos
+        async function checkPaymentStatus() {
+            try {
+                const response = await fetch('/check_payment/{{ pix_data.id }}');
+                const data = await response.json();
+
+                if (data.status === 'completed') {
+                    // Atualizar interface para mostrar sucesso
+                    document.querySelector('.loader').classList.remove('loader');
+                    document.querySelector('.fa-circle-notch').classList.remove('fa-circle-notch');
+                    document.querySelector('.fa-circle-notch').classList.add('fa-check-circle');
+                    document.querySelector('.fa-check-circle').style.color = '#10B981';
+                    document.querySelector('h2').textContent = 'Pagamento Confirmado!';
+
+                    // Redirecionar após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = '/certificado';
+                    }, 2000);
+                    return;
+                } else if (data.status === 'failed' || data.status === 'cancelled') {
+                    document.querySelector('.loader').classList.remove('loader');
+                    document.querySelector('.fa-circle-notch').classList.remove('fa-circle-notch');
+                    document.querySelector('.fa-circle-notch').classList.add('fa-times-circle');
+                    document.querySelector('.fa-times-circle').style.color = '#EF4444';
+                    document.querySelector('h2').textContent = 'Pagamento Falhou';
+                    return;
+                }
+
+                // Continuar verificando se ainda estiver pendente
+                setTimeout(checkPaymentStatus, 5000);
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+                setTimeout(checkPaymentStatus, 5000);
+            }
+        }
+
+        // Iniciar verificação do status
+        checkPaymentStatus();
     </script>
 </body>
 </html>

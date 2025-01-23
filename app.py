@@ -79,6 +79,47 @@ class For4PaymentsAPI:
             logger.error(f"Erro ao criar pagamento: {str(e)}")
             raise
 
+    def check_payment_status(self, payment_id: str) -> Dict[str, Any]:
+        """Check the status of a payment"""
+        try:
+            response = requests.get(
+                f"{self.API_URL}/transaction.status/{payment_id}",
+                headers=self._get_headers(),
+                timeout=30
+            )
+
+            if response.status_code == 200:
+                payment_data = response.json()
+                # Map For4Payments status to our application status
+                status_mapping = {
+                    'pending': 'pending',
+                    'processing': 'pending',
+                    'approved': 'completed',
+                    'completed': 'completed',
+                    'paid': 'completed',
+                    'expired': 'failed',
+                    'failed': 'failed',
+                    'canceled': 'cancelled',
+                    'cancelled': 'cancelled'
+                }
+
+                current_status = payment_data.get('status', 'pending')
+                mapped_status = status_mapping.get(current_status.lower(), 'pending')
+
+                return {
+                    'status': mapped_status,
+                    'pix_qr_code': payment_data.get('pixQrCode'),
+                    'pix_code': payment_data.get('pixCode')
+                }
+            else:
+                logger.error(f"Failed to fetch payment status: {response.text}")
+                return {'status': 'pending'}
+
+        except Exception as e:
+            logger.error(f"Error checking payment status: {str(e)}")
+            return {'status': 'pending'}
+
+
 def create_payment_api() -> For4PaymentsAPI:
     secret_key = os.environ.get("FOR4PAYMENTS_SECRET_KEY", "7e0f69db-7b2d-4166-b8c5-fceed89b67c6")
     return For4PaymentsAPI(secret_key)
@@ -160,6 +201,16 @@ def pagamento():
         logger.error(f"Erro ao gerar pagamento: {e}")
         flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
         return redirect(url_for('index'))
+
+@app.route('/check_payment/<payment_id>')
+def check_payment(payment_id):
+    try:
+        payment_api = create_payment_api()
+        status_data = payment_api.check_payment_status(payment_id)
+        return jsonify(status_data)
+    except Exception as e:
+        logger.error(f"Error checking payment status: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
