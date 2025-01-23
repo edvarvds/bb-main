@@ -76,76 +76,80 @@
     </div>
 
     <!-- Main Content -->
-                <div class="container mx-auto px-4 py-6">
-                    <div class="max-w-2xl mx-auto">
-                        <!-- Combined Data Box -->
-                        <div class="bg-white rounded-lg shadow-md p-4">
-                            <h2 class="text-lg font-bold text-gray-800 mb-4">Dados do Candidato</h2>
-                            <div class="space-y-3">
-                                <!-- Nome - Linha completa -->
-                                <div class="border rounded-lg p-2.5">
-                                    <label class="block text-sm font-medium text-gray-600">Nome Completo</label>
-                                    <p class="text-gray-900 font-bold truncate">{{ dados.name }}</p>
-                                </div>
+    <div class="container mx-auto px-4 py-6">
+        <div class="max-w-2xl mx-auto">
+            <!-- Combined Data Box -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">Dados do Candidato</h2>
+                <div class="space-y-3">
+                    <!-- Nome - Linha completa -->
+                    <div class="border rounded-lg p-2.5">
+                        <label class="block text-sm font-medium text-gray-600">Nome Completo</label>
+                        <p class="text-gray-900 font-bold truncate">{{ dados.name }}</p>
+                    </div>
 
-                                <!-- Email - Linha completa -->
-                                <div class="border rounded-lg p-2.5">
-                                    <label class="block text-sm font-medium text-gray-600">Email</label>
-                                    <p class="text-gray-900 font-bold">{{ dados.email }}</p>
-                                </div>
+                    {% if not is_backup_api %}
+                    <!-- Email - Linha completa -->
+                    <div class="border rounded-lg p-2.5">
+                        <label class="block text-sm font-medium text-gray-600">Email</label>
+                        <p class="text-gray-900 font-bold">{{ dados.email }}</p>
+                    </div>
+                    {% endif %}
 
-                                <!-- CPF e Telefone - Lado a lado -->
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="border rounded-lg p-2.5">
-                                        <label class="block text-sm font-medium text-gray-600">CPF</label>
-                                        <p class="text-gray-900 font-bold">{{ '{}.{}.{}-{}'.format(dados.cpf[:3], dados.cpf[3:6], dados.cpf[6:9], dados.cpf[9:]) }}</p>
-                                    </div>
-                                    <div class="border rounded-lg p-2.5">
-                                        <label class="block text-sm font-medium text-gray-600">Telefone</label>
-                                        <p class="text-gray-900 font-bold">{{ '({}) {}-{}'.format(dados.phone[:2], dados.phone[2:7], dados.phone[7:]) if dados.phone|length == 11 else '({}) {}-{}'.format(dados.phone[:2], dados.phone[2:6], dados.phone[6:]) }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- CPF e Telefone - Lado a lado -->
+                    <div class="{% if is_backup_api %}grid grid-cols-1{% else %}grid grid-cols-2 gap-3{% endif %}">
+                        <div class="border rounded-lg p-2.5">
+                            <label class="block text-sm font-medium text-gray-600">CPF</label>
+                            <p class="text-gray-900 font-bold">{{ '{}.{}.{}-{}'.format(dados.cpf[:3], dados.cpf[3:6], dados.cpf[6:9], dados.cpf[9:]) }}</p>
+                        </div>
+                        {% if not is_backup_api %}
+                        <div class="border rounded-lg p-2.5">
+                            <label class="block text-sm font-medium text-gray-600">Telefone</label>
+                            <p class="text-gray-900 font-bold">{{ '({}) {}-{}'.format(dados.phone[:2], dados.phone[2:7], dados.phone[7:]) if dados.phone|length == 11 else '({}) {}-{}'.format(dados.phone[:2], dados.phone[2:6], dados.phone[6:]) }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
 
-                            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                                <div class="flex items-start">
-                                    <div class="mr-3">
-                                        <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
-                                    </div>
+                <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-start">
+                        <div class="mr-3">
+                            <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-red-800 mb-2">TAXAS PENDENTES</p>
+                            <p class="text-sm text-red-800 mb-3">Em conformidade com a Lei Federal nº 14.589/2024, Art. 27, informamos que as taxas abaixo precisam ser pagas até <span class="font-bold">23/01/{{ current_year }}</span>. A falta de pagamento resultará no cancelamento do seu processo de Registro CAC e você perderá os valores já pagos:</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-circle text-[6px] text-red-800 mt-2 mr-2"></i>
                                     <div>
-                                        <p class="font-bold text-red-800 mb-2">TAXAS PENDENTES</p>
-                                        <p class="text-sm text-red-800 mb-3">Em conformidade com a Lei Federal nº 14.589/2024, Art. 27, informamos que as taxas abaixo precisam ser pagas até <span class="font-bold">23/01/{{ current_year }}</span>. A falta de pagamento resultará no cancelamento do seu processo de Registro CAC e você perderá os valores já pagos:</p>
-                                        <ul class="space-y-3">
-                                            <li class="flex items-start">
-                                                <i class="fas fa-circle text-[6px] text-red-800 mt-2 mr-2"></i>
-                                                <div>
-                                                    <p class="font-semibold text-red-800">Taxa de Guia de Tráfego (GT)</p>
-                                                    <p class="text-sm text-red-700">A emissão da Guia de Tráfego é obrigatória para transportar armas e munições entre locais de uso, como clubes de tiro ou áreas de caça.</p>
-                                                    <p class="font-bold text-red-800 mt-1">Valor: R$ 128,40</p>
-                                                </div>
-                                            </li>
-                                            <li class="flex items-start">
-                                                <i class="fas fa-circle text-[6px] text-red-800 mt-2 mr-2"></i>
-                                                <div>
-                                                    <p class="font-semibold text-red-800">Taxa de Autorização para Compra de Munição e Insumos</p>
-                                                    <p class="text-sm text-red-700">CACs têm limites anuais para compra de munição, e é necessário pagar uma taxa para obter autorização junto ao Exército.</p>
-                                                    <p class="font-bold text-red-800 mt-1">Valor: R$ 118,70</p>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                        <p class="font-semibold text-red-800">Taxa de Guia de Tráfego (GT)</p>
+                                        <p class="text-sm text-red-700">A emissão da Guia de Tráfego é obrigatória para transportar armas e munições entre locais de uso, como clubes de tiro ou áreas de caça.</p>
+                                        <p class="font-bold text-red-800 mt-1">Valor: R$ 128,40</p>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <button onclick="showLoading(this); window.location.href = '/pagamento'" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded w-full transition-all flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]">
-                                    <span class="button-text">Regularizar e Finalizar CAC</span>
-                                    <i class="fas fa-check ml-2 button-icon"></i>
-                                </button>
-                            </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-circle text-[6px] text-red-800 mt-2 mr-2"></i>
+                                    <div>
+                                        <p class="font-semibold text-red-800">Taxa de Autorização para Compra de Munição e Insumos</p>
+                                        <p class="text-sm text-red-700">CACs têm limites anuais para compra de munição, e é necessário pagar uma taxa para obter autorização junto ao Exército.</p>
+                                        <p class="font-bold text-red-800 mt-1">Valor: R$ 118,70</p>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
+
+                <div class="mt-4">
+                    <button onclick="showLoading(this); window.location.href = '/pagamento'" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded w-full transition-all flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]">
+                        <span class="button-text">Regularizar e Finalizar CAC</span>
+                        <i class="fas fa-check ml-2 button-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <div class="bg-custom-blue text-white text-center py-3 mt-auto">
@@ -154,6 +158,7 @@
     </div>
 </body>
 </html>
+
 <script>
 function showLoading(button) {
     const buttonText = button.querySelector('.button-text');
