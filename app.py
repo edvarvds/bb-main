@@ -83,10 +83,14 @@ class For4PaymentsAPI:
         """Check the status of a payment"""
         try:
             response = requests.get(
-                f"{self.API_URL}/transaction.status/{payment_id}",
+                f"{self.API_URL}/transaction.getPayment",
+                params={'id': payment_id},
                 headers=self._get_headers(),
                 timeout=30
             )
+
+            logger.info(f"Payment status check response: {response.status_code}")
+            logger.debug(f"Payment status response body: {response.text}")
 
             if response.status_code == 200:
                 payment_data = response.json()
