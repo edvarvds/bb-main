@@ -111,8 +111,7 @@
                             <li class="flex items-center">
                                 <i class="fas fa-check-circle text-green-500 mr-2"></i>
                                 Declaração de aptidão psicológica
-                            </li>
-                            
+                            </li>                            
                         </ul>
                     </div>
 
@@ -147,7 +146,7 @@
                                 </div>
                             </div>
                         </div>
-                        <form action="{{ url_for('pagamento') }}" method="POST" class="mt-6">
+                        <form action="{{ url_for('pagamento_categoria') }}" method="POST" class="mt-6">
                             <input type="hidden" name="categoria" value="cacador">
                             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center group animate-[wiggle_1s_ease-in-out_infinite]">
                                 <span>Pagar Taxa e Finalizar</span>
