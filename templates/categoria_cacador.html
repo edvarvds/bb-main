@@ -70,7 +70,7 @@
         <div class="max-w-4xl mx-auto">
             <!-- User Info -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-3">
                     <div class="border rounded-lg p-3">
                         <label class="block text-sm font-medium text-gray-600">Nome Completo</label>
                         <p class="text-gray-900 font-bold">{{ user_data.name }}</p>
@@ -93,45 +93,59 @@
                 </div>
 
                 <div class="space-y-6">
-                    <div class="border-l-4 border-custom-blue pl-4">
-                        <h3 class="font-bold text-lg mb-2">Requisitos Específicos:</h3>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700">
-                            <li>Idade mínima de 25 anos</li>
-                            <li>Certidão de antecedentes criminais</li>
-                            <li>Comprovante de residência</li>
-                            <li>Declaração de aptidão psicológica</li>
-                            <li>Certificado de curso de manejo de armas</li>
-                        </ul>
-                    </div>
-
-                    <div class="border-l-4 border-custom-yellow pl-4">
-                        <h3 class="font-bold text-lg mb-2">Documentação Ambiental:</h3>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700">
-                            <li>Licença ambiental IBAMA</li>
-                            <li>Registro no cadastro técnico federal</li>
-                            <li>Curso de manejo ambiental</li>
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-bold text-lg mb-2">Requisitos Cumpridos:</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Idade mínima de 25 anos
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Certidão de antecedentes criminais
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Comprovante de residência
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Declaração de aptidão psicológica
+                            </li>
+                            
                         </ul>
                     </div>
 
                     <!-- Taxa Box -->
                     <div class="bg-gray-100 rounded-lg p-6 mt-6">
-                        <h3 class="font-bold text-lg mb-4">Taxa Obrigatória:</h3>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium">Licença Ambiental Obrigatória</p>
-                                    <p class="text-sm text-gray-600">Válida por 1 ano</p>
+                        <div class="mb-4">
+                            <h3 class="font-bold text-lg text-red-800">Requisito Pendente:</h3>
+                            <div class="mt-4">
+                                <h4 class="font-semibold mb-2">Taxa de Licença Ambiental Obrigatória</h4>
+                                <p class="text-gray-700 mb-4">
+                                    Em conformidade com a Lei Federal nº 14.589/2024, Art. 27, a Licença Ambiental é um documento essencial para a prática legal da caça esportiva e manejo. Esta taxa custeia:
+                                </p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-700 mb-4">
+                                    <li>Avaliação técnica de áreas permitidas para caça</li>
+                                    <li>Monitoramento de espécies e preservação ambiental</li>
+                                    <li>Fiscalização e controle das atividades de caça</li>
+                                </ul>
+                                <div class="flex justify-between items-center bg-white p-4 rounded-lg">
+                                    <div>
+                                        <p class="font-medium">Valor da Taxa:</p>
+                                        <p class="text-sm text-gray-600">Validade de 1 ano</p>
+                                    </div>
+                                    <p class="font-bold text-lg">R$ 114,10</p>
                                 </div>
-                                <p class="font-bold text-lg">R$ 114,10</p>
                             </div>
-                            <form action="{{ url_for('pagamento') }}" method="POST" class="mt-4">
-                                <input type="hidden" name="categoria" value="cacador">
-                                <button type="submit" class="w-full bg-custom-blue hover:bg-opacity-90 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center">
-                                    <i class="fas fa-lock mr-2"></i>
-                                    <span>Pagar Taxa</span>
-                                </button>
-                            </form>
                         </div>
+                        <form action="{{ url_for('pagamento') }}" method="POST" class="mt-6">
+                            <input type="hidden" name="categoria" value="cacador">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center">
+                                <i class="fas fa-lock mr-2"></i>
+                                <span>Pagar Taxa e Finalizar</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
