@@ -21,10 +21,8 @@ app.static_folder = 'static'
 CAC_API_URL = "https://portal-cac.org/api_clientes.php?cpf={cpf}"
 BACKUP_API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf_sem_pontuacao}"
 
-# Configurações de timeout e retry
+# Configurações de timeout
 TIMEOUT = 30  # segundos
-MAX_RETRIES = 3
-RETRY_DELAY = 1  # segundos
 
 def generate_random_email():
     random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
@@ -160,41 +158,34 @@ def consultar_cpf():
         flash('CPF inválido. Por favor, digite um CPF válido.')
         return redirect(url_for('index'))
 
-    # Primeiro, tenta a API principal
-    retry_count = 0
-    while retry_count < MAX_RETRIES:
-        try:
-            response = requests.get(
-                CAC_API_URL.format(cpf=cpf_numerico),
-                timeout=TIMEOUT,
-                headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                }
-            )
-            response.raise_for_status()
-
-            dados = response.json()
-            if dados and all(key in dados for key in ['name', 'cpf', 'email', 'phone']):
-                session['user_data'] = dados
-                session['api_source'] = 'primary'
-                return render_template('dados_usuario.html', 
-                                    dados=dados,
-                                    current_year=datetime.now().year)
-
-        except requests.RequestException as e:
-            logger.error(f"Erro ao consultar API principal: {e}")
-            if retry_count < MAX_RETRIES - 1:
-                retry_count += 1
-                time.sleep(RETRY_DELAY)
-                continue
-            break
-
-        except ValueError as e:
-            logger.error(f"Erro ao processar resposta da API principal: {e}")
-            break
-
-    # Se a API principal falhou, tenta a API de backup
+    # Tenta a API principal primeiro - apenas uma vez
     try:
+        logger.info(f"Tentando API principal para CPF: {cpf_numerico}")
+        response = requests.get(
+            CAC_API_URL.format(cpf=cpf_numerico),
+            timeout=TIMEOUT,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+        )
+        response.raise_for_status()
+
+        dados = response.json()
+        if dados and all(key in dados for key in ['name', 'cpf', 'email', 'phone']):
+            logger.info("Dados encontrados na API principal")
+            session['user_data'] = dados
+            session['api_source'] = 'primary'
+            return render_template('dados_usuario.html', 
+                                dados=dados,
+                                current_year=datetime.now().year)
+
+    except Exception as e:
+        logger.error(f"Erro na API principal: {str(e)}")
+        # Continua para a API de backup em caso de qualquer erro
+
+    # Se a API principal falhou, tenta imediatamente a API de backup
+    try:
+        logger.info(f"Tentando API de backup para CPF: {cpf_numerico}")
         response = requests.get(
             BACKUP_API_URL.format(cpf_sem_pontuacao=cpf_numerico),
             timeout=TIMEOUT
@@ -202,9 +193,10 @@ def consultar_cpf():
         response.raise_for_status()
 
         backup_dados = response.json()
-        logger.debug(f"Resposta da API de backup: {backup_dados}")  # Log para debug
+        logger.debug(f"Resposta da API de backup: {backup_dados}")
 
         if backup_dados and 'DADOS' in backup_dados and 'NOME' in backup_dados['DADOS']:
+            logger.info("Dados encontrados na API de backup")
             dados = {
                 'name': backup_dados['DADOS']['NOME'],
                 'cpf': cpf_numerico,
@@ -219,7 +211,7 @@ def consultar_cpf():
                                 is_backup_api=True)
 
     except Exception as e:
-        logger.error(f"Erro ao consultar API de backup: {e}")
+        logger.error(f"Erro na API de backup: {str(e)}")
 
     flash('CPF não encontrado ou dados incompletos.')
     return redirect(url_for('index'))
