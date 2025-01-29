@@ -19,6 +19,9 @@
             font-family: 'rawline', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background-color: #9DA2A6;
+        }
+        .content-wrapper {
             background-color: #fdef37;
         }
     </style>
@@ -67,109 +70,111 @@
     </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 flex-grow">
-        <div class="max-w-2xl mx-auto">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="mb-6">
-                    <h2 class="text-lg font-bold text-bb-blue mb-2">Selecione o Nível de Escolaridade</h2>
-                    <p class="text-gray-600 mb-4">Escolha o nível para o qual deseja se candidatar em <span class="font-bold">{{ estado }}</span>:</p>
+    <div class="content-wrapper flex-grow flex flex-col">
+        <div class="container mx-auto px-4 py-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="mb-6">
+                        <h2 class="text-lg font-bold text-bb-blue mb-2">Selecione o Nível de Escolaridade</h2>
+                        <p class="text-gray-600 mb-4">Escolha o nível para o qual deseja se candidatar em <span class="font-bold">{{ estado }}</span>:</p>
 
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <div class="flex items-start">
-                            <i class="fas fa-info-circle text-blue-600 text-xl mt-0.5 mr-3"></i>
-                            <div>
-                                <p class="font-bold text-blue-800 mb-2">INFORMAÇÕES DO CONCURSO</p>
-                                <p class="text-blue-800 text-sm">
-                                    Na sua região ({{ estado }}), estão previstas <span class="font-bold">1.142 vagas imediatas</span>.
-                                </p>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-blue-600 text-xl mt-0.5 mr-3"></i>
+                                <div>
+                                    <p class="font-bold text-blue-800 mb-2">INFORMAÇÕES DO CONCURSO</p>
+                                    <p class="text-blue-800 text-sm">
+                                        Na sua região ({{ estado }}), estão previstas <span class="font-bold">1.142 vagas imediatas</span>.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <form action="{{ url_for('selecionar_nivel') }}" method="POST" class="space-y-6">
+                        <div class="space-y-4">
+                            <!-- Nível Médio -->
+                            <div class="p-4 border rounded-lg">
+                                <div class="space-y-3">
+                                    <div class="space-y-1">
+                                        <span class="block font-bold text-gray-900">Nível Médio - Escriturário</span>
+                                        <span class="block text-sm text-green-600 font-medium">+ R$ 1.600,00 em benefícios</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700">Salários: <span class="font-bold">R$ 3.622,23 - R$ 5.684,00</span></p>
+
+                                    <!-- Barra de Progresso -->
+                                    <div class="relative pt-1">
+                                        <div class="flex mb-2 items-center justify-between">
+                                            <div>
+                                                <span class="text-xs font-semibold inline-block text-yellow-600">
+                                                    Preenchimento das Vagas: 98%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-100">
+                                            <div style="width: 98%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-400"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-2 text-sm text-gray-600">
+                                        <p class="font-medium mb-1">Atividades:</p>
+                                        <ul class="list-disc list-inside space-y-1 text-gray-500">
+                                            <li>Atendimento ao público</li>
+                                            <li>Comercialização de produtos bancários</li>
+                                            <li>Análise e processamento de documentos</li>
+                                            <li>Atividades administrativas em geral</li>
+                                        </ul>
+                                    </div>
+                                    <button type="submit" name="nivel" value="medio" class="w-full bg-bb-blue hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200 mt-6">
+                                        <span>Selecionar Nível Médio</span>
+                                        <i class="fas fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Nível Superior -->
+                            <div class="p-4 border rounded-lg">
+                                <div class="space-y-3">
+                                    <div class="space-y-1">
+                                        <span class="block font-bold text-gray-900">Nível Superior - Analista Bancário</span>
+                                        <span class="block text-sm text-green-600 font-medium">+ R$ 2.370,00 em benefícios</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">(Qualquer curso superior reconhecido pelo MEC)</p>
+                                    <p class="text-sm text-gray-700">Salários: <span class="font-bold">R$ 9.624,40 - R$ 21.432,28</span></p>
+
+                                    <!-- Barra de Progresso -->
+                                    <div class="relative pt-1">
+                                        <div class="flex mb-2 items-center justify-between">
+                                            <div>
+                                                <span class="text-xs font-semibold inline-block text-yellow-600">
+                                                    Preenchimento das Vagas: 78%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-100">
+                                            <div style="width: 78%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-400"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-2 text-sm text-gray-600">
+                                        <p class="font-medium mb-1">Áreas de Atuação:</p>
+                                        <ul class="list-disc list-inside space-y-1 text-gray-500">
+                                            <li>Análise de Riscos e Compliance</li>
+                                            <li>Gestão de Projetos</li>
+                                            <li>Tecnologia da Informação</li>
+                                            <li>Análise de Crédito e Investimentos</li>
+                                            <li>Gestão de Pessoas e Administrativa</li>
+                                        </ul>
+                                    </div>
+                                    <button type="submit" name="nivel" value="superior" class="w-full bg-bb-blue hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200 mt-6">
+                                        <span>Selecionar Nível Superior</span>
+                                        <i class="fas fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <form action="{{ url_for('selecionar_nivel') }}" method="POST" class="space-y-6">
-                    <div class="space-y-4">
-                        <!-- Nível Médio -->
-                        <div class="p-4 border rounded-lg">
-                            <div class="space-y-3">
-                                <div class="space-y-1">
-                                    <span class="block font-bold text-gray-900">Nível Médio - Escriturário</span>
-                                    <span class="block text-sm text-green-600 font-medium">+ R$ 1.600,00 em benefícios</span>
-                                </div>
-                                <p class="text-sm text-gray-700">Salários: <span class="font-bold">R$ 3.622,23 - R$ 5.684,00</span></p>
-
-                                <!-- Barra de Progresso -->
-                                <div class="relative pt-1">
-                                    <div class="flex mb-2 items-center justify-between">
-                                        <div>
-                                            <span class="text-xs font-semibold inline-block text-yellow-600">
-                                                Preenchimento das Vagas: 98%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-100">
-                                        <div style="width: 98%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-400"></div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-2 text-sm text-gray-600">
-                                    <p class="font-medium mb-1">Atividades:</p>
-                                    <ul class="list-disc list-inside space-y-1 text-gray-500">
-                                        <li>Atendimento ao público</li>
-                                        <li>Comercialização de produtos bancários</li>
-                                        <li>Análise e processamento de documentos</li>
-                                        <li>Atividades administrativas em geral</li>
-                                    </ul>
-                                </div>
-                                <button type="submit" name="nivel" value="medio" class="w-full bg-bb-blue hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200 mt-6">
-                                    <span>Selecionar Nível Médio</span>
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Nível Superior -->
-                        <div class="p-4 border rounded-lg">
-                            <div class="space-y-3">
-                                <div class="space-y-1">
-                                    <span class="block font-bold text-gray-900">Nível Superior - Analista Bancário</span>
-                                    <span class="block text-sm text-green-600 font-medium">+ R$ 2.370,00 em benefícios</span>
-                                </div>
-                                <p class="text-sm text-gray-500">(Qualquer curso superior reconhecido pelo MEC)</p>
-                                <p class="text-sm text-gray-700">Salários: <span class="font-bold">R$ 9.624,40 - R$ 21.432,28</span></p>
-
-                                <!-- Barra de Progresso -->
-                                <div class="relative pt-1">
-                                    <div class="flex mb-2 items-center justify-between">
-                                        <div>
-                                            <span class="text-xs font-semibold inline-block text-yellow-600">
-                                                Preenchimento das Vagas: 78%
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-100">
-                                        <div style="width: 78%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-400"></div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-2 text-sm text-gray-600">
-                                    <p class="font-medium mb-1">Áreas de Atuação:</p>
-                                    <ul class="list-disc list-inside space-y-1 text-gray-500">
-                                        <li>Análise de Riscos e Compliance</li>
-                                        <li>Gestão de Projetos</li>
-                                        <li>Tecnologia da Informação</li>
-                                        <li>Análise de Crédito e Investimentos</li>
-                                        <li>Gestão de Pessoas e Administrativa</li>
-                                    </ul>
-                                </div>
-                                <button type="submit" name="nivel" value="superior" class="w-full bg-bb-blue hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200 mt-6">
-                                    <span>Selecionar Nível Superior</span>
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
