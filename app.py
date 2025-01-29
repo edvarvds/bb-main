@@ -116,6 +116,47 @@ def gerar_datas_falsas(data_real: str) -> list:
     # Formata as datas no padrão brasileiro
     return [data.strftime('%d/%m/%Y') for data in todas_datas]
 
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to every response"""
+    # Prevent site from being embedded in iframes
+    response.headers['X-Frame-Options'] = 'DENY'
+    # Prevent content type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # Enable XSS filter
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Prevent caching of responses
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+    response.headers['Pragma'] = 'no-cache'
+    # Prevent direct linking/hotlinking
+    response.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
+    return response
+
+@app.before_request
+def check_user_agent():
+    """Block known web scraping and site downloading tools"""
+    blocked_uas = [
+        'HTTrack', 'wget', 'curl', 'WebZIP', 'WebCopier', 'Offline Explorer',
+        'Web-Ripper', 'WebStripper', 'Web Scraper', 'Teleport Pro',
+        'WebReaper', 'WebSauger', 'saveweb2zip'
+    ]
+
+    user_agent = request.headers.get('User-Agent', '').lower()
+
+    # Block known scraping tools
+    if any(ua.lower() in user_agent for ua in blocked_uas):
+        return 'Access Denied', 403
+
+    # Block if no user agent is provided
+    if not user_agent:
+        return 'Access Denied', 403
+
+    # Block automated requests
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and \
+       'Mozilla' not in user_agent and 'Chrome' not in user_agent:
+        return 'Access Denied', 403
+
+
 @app.route('/consultar_cpf', methods=['POST'])
 def consultar_cpf():
     cpf = request.form.get('cpf', '').strip()
