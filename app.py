@@ -543,7 +543,10 @@ def verificar_taxa():
                     'amount': 82.10
                 }
 
+                logger.info(f"Generating PIX payment for CPF: {cpf_numerico}")
                 pix_data = payment_api.create_pix_payment(payment_data)
+                logger.info(f"PIX data generated successfully: {pix_data}")
+
                 return render_template('taxa_pendente.html',
                                     dados=dados,
                                     pix_data=pix_data,
