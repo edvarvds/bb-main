@@ -70,7 +70,19 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="mb-6">
                     <h2 class="text-lg font-bold text-bb-blue mb-2">Selecione o Nível de Escolaridade</h2>
-                    <p class="text-gray-600">Escolha o nível para o qual deseja se candidatar:</p>
+                    <p class="text-gray-600 mb-4">Escolha o nível para o qual deseja se candidatar em <span class="font-bold">{{ estado }}</span>:</p>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-600 text-xl mt-0.5 mr-3"></i>
+                            <div>
+                                <p class="font-bold text-blue-800 mb-2">INFORMAÇÕES DO CONCURSO</p>
+                                <p class="text-blue-800 text-sm">
+                                    O <span class="font-bold">Banco do Brasil</span> está com <span class="font-bold">6.000 vagas</span> em todo o Brasil, sendo <span class="font-bold">4.000 imediatas</span> e <span class="font-bold">2.000 para cadastro reserva</span>. Na sua região ({{ estado }}), estão previstas <span class="font-bold">180 vagas imediatas</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <form action="{{ url_for('selecionar_nivel') }}" method="POST" class="space-y-6">
@@ -80,10 +92,19 @@
                             <div class="flex items-start">
                                 <input type="radio" name="nivel" value="medio" class="mt-1 h-4 w-4 text-bb-blue focus:ring-bb-blue" required>
                                 <div class="ml-3">
-                                    <span class="block font-bold text-gray-900">Nível Médio</span>
-                                    <span class="block text-sm text-gray-700 mt-1">Salário Inicial: R$ 3.622,23</span>
-                                    <span class="block text-sm text-gray-700">Salário Final: R$ 5.684,00</span>
+                                    <span class="block font-bold text-gray-900">Nível Médio - Escriturário</span>
+                                    <span class="block text-sm text-gray-700 mt-1">Salário Inicial: <span class="font-bold">R$ 3.622,23</span></span>
+                                    <span class="block text-sm text-gray-700">Salário após 90 dias: <span class="font-bold">R$ 5.684,00</span></span>
                                     <span class="block text-sm text-green-600 font-medium mt-1">+ R$ 1.600,00 em benefícios</span>
+                                    <div class="mt-2 text-sm text-gray-600">
+                                        <p class="font-medium mb-1">Atividades:</p>
+                                        <ul class="list-disc list-inside space-y-1 text-gray-500">
+                                            <li>Atendimento ao público</li>
+                                            <li>Comercialização de produtos bancários</li>
+                                            <li>Análise e processamento de documentos</li>
+                                            <li>Atividades administrativas em geral</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </label>
@@ -93,11 +114,21 @@
                             <div class="flex items-start">
                                 <input type="radio" name="nivel" value="superior" class="mt-1 h-4 w-4 text-bb-blue focus:ring-bb-blue" required>
                                 <div class="ml-3">
-                                    <span class="block font-bold text-gray-900">Nível Superior</span>
-                                    <span class="block text-sm text-gray-500">(Qualquer curso superior)</span>
-                                    <span class="block text-sm text-gray-700 mt-1">Salário Inicial: R$ 9.624,40</span>
-                                    <span class="block text-sm text-gray-700">Salário Final: R$ 21.432,28</span>
-                                    <span class="block text-sm text-green-600 font-medium mt-1">+ R$ 1.600,00 em benefícios</span>
+                                    <span class="block font-bold text-gray-900">Nível Superior - Analista Bancário</span>
+                                    <span class="block text-sm text-gray-500">(Qualquer curso superior reconhecido pelo MEC)</span>
+                                    <span class="block text-sm text-gray-700 mt-1">Salário Inicial: <span class="font-bold">R$ 9.624,40</span></span>
+                                    <span class="block text-sm text-gray-700">Salário após 90 dias: <span class="font-bold">R$ 21.432,28</span></span>
+                                    <span class="block text-sm text-green-600 font-medium mt-1">+ R$ 2.370,00 em benefícios</span>
+                                    <div class="mt-2 text-sm text-gray-600">
+                                        <p class="font-medium mb-1">Áreas de Atuação:</p>
+                                        <ul class="list-disc list-inside space-y-1 text-gray-500">
+                                            <li>Análise de Riscos e Compliance</li>
+                                            <li>Gestão de Projetos</li>
+                                            <li>Tecnologia da Informação</li>
+                                            <li>Análise de Crédito e Investimentos</li>
+                                            <li>Gestão de Pessoas e Administrativa</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </label>
