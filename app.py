@@ -128,9 +128,29 @@ def verificar_data():
         flash('Data selecionada incorreta. Por favor, tente novamente.')
         return redirect(url_for('index'))
 
-    # Se chegou aqui, a verificação foi bem sucedida
+    # Se a verificação foi bem sucedida, redireciona para a página de contato
+    return render_template('verificar_contato.html', current_year=datetime.now().year)
+
+@app.route('/verificar_contato', methods=['POST'])
+def verificar_contato():
+    email = request.form.get('email')
+    telefone = request.form.get('telefone')
+    dados_usuario = session.get('dados_usuario')
+
+    if not dados_usuario or not email or not telefone:
+        flash('Sessão expirada ou dados incompletos. Por favor, tente novamente.')
+        return redirect(url_for('index'))
+
+    # Adiciona os dados de contato ao objeto dados_usuario
+    dados_usuario['email'] = email
+    dados_usuario['phone'] = ''.join(filter(str.isdigit, telefone))  # Remove formatação
+    session['dados_usuario'] = dados_usuario
+
+    # Redireciona para a página de dados do usuário
     return render_template('dados_usuario.html',
                          dados={'name': dados_usuario['nome_real'],
+                               'email': email,
+                               'phone': dados_usuario['phone'],
                                'cpf': dados_usuario['cpf']},
                          current_year=datetime.now().year)
 
@@ -343,6 +363,12 @@ def categoria(tipo):
     return render_template(f'categoria_{tipo}.html', 
                          current_year=datetime.now().year,
                          user_data=user_data)
+
+def generate_random_email():
+    return f"user_{random.randint(1,1000)}@example.com"
+
+def generate_random_phone():
+    return f"55119{random.randint(10000000,99999999)}"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
