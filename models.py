@@ -1,5 +1,4 @@
 from app import db
-from flask_login import UserMixin
 from datetime import datetime
 
 class Usuario(db.Model):
@@ -17,3 +16,6 @@ class Usuario(db.Model):
     estado = db.Column(db.String(2))
     data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
     realizou_pagamento = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f'<Usuario {self.nome_completo}>'

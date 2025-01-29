@@ -15,21 +15,39 @@ logger = logging.getLogger(__name__)
 class Base(DeclarativeBase):
     pass
 
-db = SQLAlchemy(model_class=Base)
+# create the app
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
-app.static_folder = 'static'
 
-# Configure o SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///users.db")
+# setup a secret key, required by sessions
+app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
+
+# Configuração do SQLAlchemy
+database_url = os.environ.get("DATABASE_URL")
+if not database_url:
+    raise RuntimeError("DATABASE_URL environment variable is not set")
+
+# Ensure proper format for PostgreSQL URL
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+logger.debug(f"Using database URL: {database_url.split('@')[1]}")  # Log only the host part for security
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
 }
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# initialize the app with the extension
+db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
-# Importe os modelos após inicializar o db
-from models import Usuario
+with app.app_context():
+    # Make sure to import the models here or their tables won't be created
+    import models  # noqa: F401
+    db.create_all()
+    logger.info("Database tables created successfully")
 
 # Mapeamento de estados para siglas
 ESTADOS = {
@@ -305,6 +323,27 @@ def verificar_endereco():
         dados_usuario['endereco'] = endereco
         session['dados_usuario'] = dados_usuario
 
+        try:
+            # Salvar dados do usuário no banco
+            usuario = models.Usuario(
+                nome_completo=dados_usuario['nome_real'],
+                cpf=''.join(filter(str.isdigit, dados_usuario['cpf'])),
+                email=dados_usuario['email'],
+                telefone=dados_usuario['phone'],
+                cep=endereco['cep'],
+                logradouro=endereco['logradouro'],
+                numero=endereco['numero'],
+                complemento=endereco['complemento'],
+                bairro=endereco['bairro'],
+                cidade=endereco['cidade'],
+                estado=endereco['estado']
+            )
+            db.session.add(usuario)
+            db.session.commit()
+        except Exception as e:
+            logger.error(f"Erro ao salvar usuário: {str(e)}")
+            db.session.rollback()
+
         # Redireciona para a página de aviso de pagamento
         return render_template('aviso_pagamento.html',
                             dados={'name': dados_usuario['nome_real'],
@@ -445,7 +484,7 @@ def pagamento():
     try:
         # Salvar dados do usuário no banco
         endereco = user_data.get('endereco', {})
-        usuario = Usuario(
+        usuario = models.Usuario(
             nome_completo=user_data['nome_real'],
             cpf=''.join(filter(str.isdigit, user_data['cpf'])),
             email=user_data.get('email', ''),
@@ -561,7 +600,9 @@ def consultar_apostila():
         return redirect(url_for('apostila'))
 
     try:
-        usuario = Usuario.query.filter_by(cpf=cpf_numerico, realizou_pagamento=True).first()
+        # Buscar usuário no banco de dados
+        usuario = models.Usuario.query.filter_by(cpf=cpf_numerico).first()
+
         if usuario:
             return render_template('comprar_apostila.html',
                                usuario=usuario,
@@ -580,10 +621,6 @@ def generate_random_email():
 
 def generate_random_phone():
     return f"55119{random.randint(10000000,99999999)}"
-
-# Criar as tabelas do banco de dados
-with app.app_context():
-    db.create_all()
 
 API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
