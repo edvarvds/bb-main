@@ -210,8 +210,10 @@ def selecionar_estado():
     dados_usuario['estado'] = estado
     session['dados_usuario'] = dados_usuario
 
-    # Redireciona para a seleção de nível
-    return render_template('selecionar_nivel.html', current_year=datetime.now().year)
+    # Redireciona para a seleção de nível, passando o estado selecionado
+    return render_template('selecionar_nivel.html', 
+                         estado=estado,
+                         current_year=datetime.now().year)
 
 @app.route('/selecionar_nivel', methods=['POST'])
 def selecionar_nivel():
