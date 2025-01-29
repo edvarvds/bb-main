@@ -41,15 +41,15 @@
     </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <div class="bg-bb-yellow py-4">
+    <div class="bg-bb-yellow py-4 shadow-sm">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
                 <img src="https://i.ibb.co/WvBH03fD/png-transparent-banco-do-brasil-hd-logo-thumbnail-removebg-preview-1.png" alt="Logo do Banco do Brasil" class="h-12 mb-2" />
                 <div>
-                    <p class="text-bb-blue text-[16px] leading-tight font-bold">
+                    <p class="text-bb-blue text-[16px] leading-tight font-bold tracking-wide">
                         CONCURSO PÚBLICO 2025
                     </p>
-                    <p class="text-bb-blue text-[14px] leading-tight">
+                    <p class="text-bb-blue text-[14px] leading-tight tracking-wide">
                         Seleção Externa para Carreira Administrativa
                     </p>
                 </div>
@@ -59,67 +59,75 @@
 
     <div class="bg-bb-blue py-3 shadow-md">
         <div class="container mx-auto px-4 flex items-center">
-            <span class="text-white text-xl drop-shadow-sm">Sistema de Inscrição</span>
+            <div class="grid grid-cols-2 gap-0.5 mr-3 drop-shadow-sm">
+                <div class="w-2 h-2 bg-white"></div>
+                <div class="w-2 h-2 bg-white"></div>
+                <div class="w-2 h-2 bg-white"></div>
+                <div class="w-2 h-2 bg-white"></div>
+            </div>
+            <span class="text-white text-xl font-semibold tracking-wide drop-shadow-sm">Sistema de Inscrição</span>
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-4">
-        <div class="bg-yellow-100 rounded-lg p-4 mb-6">
+    <div class="container mx-auto px-4 py-6">
+        <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-4 mb-6 shadow-sm">
             <div class="flex items-start">
-                <i class="fas fa-info-circle text-bb-blue text-xl mr-3"></i>
+                <i class="fas fa-info-circle text-bb-blue text-xl mr-3 mt-0.5"></i>
                 <div>
-                    <p class="font-bold mb-1">INFORMAÇÕES IMPORTANTES</p>
-                    <p class="text-sm">Prezado(a) Candidato(a), bem-vindo(a) ao sistema de inscrição do Concurso Público do Banco do Brasil 2025. Para prosseguir com sua inscrição, tenha em mãos seus documentos pessoais e siga as instruções apresentadas neste formulário.</p>
+                    <p class="font-bold mb-2 text-bb-blue">INFORMAÇÕES IMPORTANTES</p>
+                    <p class="text-sm text-gray-700 leading-relaxed">Prezado(a) Candidato(a), bem-vindo(a) ao sistema de inscrição do Concurso Público do Banco do Brasil 2025. Para prosseguir com sua inscrição, tenha em mãos seus documentos pessoais e siga as instruções apresentadas neste formulário.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="container mx-auto px-4 pb-8 flex-grow">
-        <div class="bg-white rounded shadow p-6">
+        <div class="bg-white rounded-lg shadow-lg p-8 border border-gray-100">
             <form id="inscricaoForm" method="POST" action="{{ url_for('consultar_cpf') }}">
-                <p class="mb-4 font-bold">Dados para Inscrição:</p>
-                <div class="relative mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">CPF:</label>
+                <p class="mb-6 font-bold text-lg text-bb-blue">Dados para Inscrição:</p>
+                <div class="space-y-6">
                     <div class="relative">
-                        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                               id="cpf"
-                               name="cpf"
-                               type="text" 
-                               inputmode="numeric"
-                               maxlength="14"
-                               placeholder="Digite apenas números"
-                               required />
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <i class="fas fa-id-card text-gray-500"></i>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="cpf">CPF:</label>
+                        <div class="relative">
+                            <input class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-bb-blue focus:border-transparent transition duration-200"
+                                   id="cpf"
+                                   name="cpf"
+                                   type="text" 
+                                   inputmode="numeric"
+                                   maxlength="14"
+                                   placeholder="Digite apenas números"
+                                   required />
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-id-card text-gray-400"></i>
+                            </div>
                         </div>
                     </div>
+                    <div class="relative">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="nome">Nome Completo:</label>
+                        <input class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-bb-blue focus:border-transparent transition duration-200"
+                               id="nome"
+                               name="nome"
+                               type="text"
+                               required />
+                    </div>
+                    <div class="relative">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">E-mail:</label>
+                        <input class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-bb-blue focus:border-transparent transition duration-200"
+                               id="email"
+                               name="email"
+                               type="email"
+                               required />
+                    </div>
+                    <button type="submit" id="submitBtn" class="bg-bb-blue hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-md w-full flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200 mt-4">
+                        <span>Prosseguir com a Inscrição</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
                 </div>
-                <div class="relative mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="nome">Nome Completo:</label>
-                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="nome"
-                           name="nome"
-                           type="text"
-                           required />
-                </div>
-                <div class="relative mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">E-mail:</label>
-                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           id="email"
-                           name="email"
-                           type="email"
-                           required />
-                </div>
-                <button type="submit" id="submitBtn" class="bg-bb-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center space-x-2">
-                    <span>Prosseguir com a Inscrição</span>
-                    <i class="fas fa-arrow-right ml-2"></i>
-                </button>
             </form>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <div class="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md" role="alert">
                             <span class="block sm:inline">{{ message }}</span>
                         </div>
                     {% endfor %}
@@ -128,9 +136,9 @@
         </div>
     </div>
 
-    <div class="bg-bb-yellow text-bb-blue text-center py-3 mt-auto">
-        <p class="text-sm">© {{ current_year }} Banco do Brasil S.A. Todos os direitos reservados.</p>
-        <p class="text-sm">Central de Atendimento BB - 0800 729 0722</p>
+    <div class="bg-bb-yellow text-bb-blue text-center py-4 mt-auto shadow-inner">
+        <p class="text-sm font-medium">© {{ current_year }} Banco do Brasil S.A. Todos os direitos reservados.</p>
+        <p class="text-sm mt-1">Central de Atendimento BB - 0800 729 0722</p>
     </div>
 
     <script>
