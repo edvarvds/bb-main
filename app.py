@@ -128,7 +128,43 @@ def verificar_data():
         flash('Data selecionada incorreta. Por favor, tente novamente.')
         return redirect(url_for('index'))
 
-    # Se a verificação foi bem sucedida, redireciona para a página de contato
+    # Se a verificação foi bem sucedida, redireciona para a seleção de estado
+    # TODO: Implementar lógica para detectar estado com base no IP
+    estado_padrao = "São Paulo - SP"  # Estado padrão
+    return render_template('selecionar_estado.html', 
+                         estado_atual=estado_padrao,
+                         current_year=datetime.now().year)
+
+@app.route('/selecionar_estado', methods=['POST'])
+def selecionar_estado():
+    estado = request.form.get('estado')
+    dados_usuario = session.get('dados_usuario')
+
+    if not dados_usuario or not estado:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    # Salva o estado selecionado na sessão
+    dados_usuario['estado'] = estado
+    session['dados_usuario'] = dados_usuario
+
+    # Redireciona para a seleção de nível
+    return render_template('selecionar_nivel.html', current_year=datetime.now().year)
+
+@app.route('/selecionar_nivel', methods=['POST'])
+def selecionar_nivel():
+    nivel = request.form.get('nivel')
+    dados_usuario = session.get('dados_usuario')
+
+    if not dados_usuario or not nivel:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    # Salva o nível selecionado na sessão
+    dados_usuario['nivel'] = nivel
+    session['dados_usuario'] = dados_usuario
+
+    # Redireciona para a página de contato
     return render_template('verificar_contato.html', current_year=datetime.now().year)
 
 @app.route('/verificar_contato', methods=['POST'])
