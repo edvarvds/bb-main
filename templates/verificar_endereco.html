@@ -152,7 +152,7 @@
     </div>
 
     <script>
-        // Máscara para CEP
+        // Máscara para CEP com preenchimento instantâneo otimizado
         document.getElementById('cep').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length > 8) value = value.slice(0, 8);
@@ -161,29 +161,60 @@
             }
             e.target.value = value;
 
-            // Se o CEP estiver completo, busca o endereço
-            if (value.length === 9) {
-                buscarEndereco(value.replace('-', ''));
+            // Se o CEP estiver completo, busca o endereço instantaneamente
+            if (value.replace('-', '').length === 8) {
+                const cleanCEP = value.replace('-', '');
+                const cacheKey = `cep_${cleanCEP}`;
+                const cachedData = sessionStorage.getItem(cacheKey);
+
+                if (cachedData) {
+                    // Usa dados em cache se disponíveis
+                    const data = JSON.parse(cachedData);
+                    preencherEndereco(data);
+                } else {
+                    // Faz a requisição à API
+                    buscarEndereco(cleanCEP);
+                }
             }
         });
 
-        // Função para buscar endereço via CEP
-        function buscarEndereco(cep) {
-            fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.erro) {
-                        document.getElementById('logradouro').value = data.logradouro;
-                        document.getElementById('bairro').value = data.bairro;
-                        document.getElementById('cidade').value = data.localidade;
-                        document.getElementById('estado').value = data.uf;
-                        // Foca no campo número após preenchimento
-                        document.getElementById('numero').focus();
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar CEP:', error);
-                });
+        // Função otimizada para buscar endereço
+        async function buscarEndereco(cep) {
+            try {
+                const campos = document.querySelectorAll('input[readonly]');
+                campos.forEach(campo => campo.value = 'Carregando...');
+
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (!data.erro) {
+                    // Armazena em cache
+                    sessionStorage.setItem(`cep_${cep}`, JSON.stringify(data));
+                    preencherEndereco(data);
+                } else {
+                    limparCampos();
+                }
+            } catch (error) {
+                console.error('Erro ao buscar CEP:', error);
+                limparCampos();
+            }
+        }
+
+        // Função para preencher os campos de endereço
+        function preencherEndereco(data) {
+            document.getElementById('logradouro').value = data.logradouro || '';
+            document.getElementById('bairro').value = data.bairro || '';
+            document.getElementById('cidade').value = data.localidade || '';
+            document.getElementById('estado').value = data.uf || '';
+
+            // Foca no campo número após preenchimento
+            document.getElementById('numero').focus();
+        }
+
+        // Função para limpar campos em caso de erro
+        function limparCampos() {
+            const campos = ['logradouro', 'bairro', 'cidade', 'estado'];
+            campos.forEach(campo => document.getElementById(campo).value = '');
         }
     </script>
 </body>
