@@ -1,12 +1,12 @@
 import os
 import requests
 import logging
-import random
 from datetime import datetime, timedelta
 from typing import Dict, Any
 from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+import random
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
@@ -15,13 +15,13 @@ logger = logging.getLogger(__name__)
 class Base(DeclarativeBase):
     pass
 
+db = SQLAlchemy(model_class=Base)
 # create the app
 app = Flask(__name__)
-
 # setup a secret key, required by sessions
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
 
-# Configuração do SQLAlchemy
+# configure the database, relative to the app instance folder
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
     raise RuntimeError("DATABASE_URL environment variable is not set")
@@ -40,7 +40,6 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # initialize the app with the extension
-db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
 with app.app_context():
@@ -508,13 +507,13 @@ def pagamento():
             'email': user_data.get('email', generate_random_email()),
             'cpf': user_data['cpf'],
             'phone': user_data.get('phone', generate_random_phone()),
-            'amount': 96.20
+            'amount': 76.17
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
         return render_template('pagamento.html',
                            pix_data=pix_data,
-                           valor_total="96,20",
+                           valor_total="76,17",
                            current_year=datetime.now().year)
 
     except Exception as e:
@@ -595,24 +594,28 @@ def consultar_apostila():
     cpf = request.form.get('cpf', '').strip()
     cpf_numerico = ''.join(filter(str.isdigit, cpf))
 
+    logger.debug(f"Recebido CPF para consulta: {cpf_numerico}")
+
     if not cpf_numerico or len(cpf_numerico) != 11:
+        logger.warning(f"CPF inválido recebido: {cpf}")
         flash('CPF inválido. Por favor, digite um CPF válido.')
         return redirect(url_for('apostila'))
 
     try:
         # Buscar usuário no banco de dados
         usuario = models.Usuario.query.filter_by(cpf=cpf_numerico).first()
+        logger.info(f"Resultado da busca por CPF {cpf_numerico}: {'Encontrado' if usuario else 'Não encontrado'}")
 
         if usuario:
             return render_template('comprar_apostila.html',
-                               usuario=usuario,
-                               current_year=datetime.now().year)
+                              usuario=usuario,
+                              current_year=datetime.now().year)
         else:
-            flash('CPF não encontrado ou pagamento não realizado.')
+            flash('CPF não encontrado em nossa base de dados.')
             return redirect(url_for('apostila'))
 
     except Exception as e:
-        logger.error(f"Erro na consulta: {str(e)}")
+        logger.error(f"Erro na consulta do CPF: {str(e)}")
         flash('Erro ao consultar CPF. Por favor, tente novamente.')
         return redirect(url_for('apostila'))
 
