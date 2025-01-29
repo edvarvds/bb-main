@@ -41,7 +41,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->
-    <div class="bg-white py-4">
+    <div class="bg-white py-4 shadow-sm">
         <div class="container mx-auto px-4">
             <div class="flex flex-col items-center text-center">
                 <img src="https://i.ibb.co/7RG7SfZ/MEAssinatura-1.png" alt="Logo of Secretaria de Estado de Economia" class="h-8 mb-2" />
@@ -63,15 +63,13 @@
     <!-- Blue bar -->
     <div class="bg-custom-blue py-3 shadow-md">
         <div class="container mx-auto px-4 flex items-center">
-            <button class="text-white text-2xl mr-4">
-                <div class="grid grid-cols-2 gap-0.5 drop-shadow-sm">
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-2 h-2 bg-white"></div>
-                    <div class="w-1.5 h-1.5 bg-white"></div>
-                </div>
-            </button>
-            <span class="text-white text-xl drop-shadow-sm">DADOS DO CADASTRO</span>
+            <div class="grid grid-cols-2 gap-0.5 mr-3 drop-shadow-sm">
+                <div class="w-2 h-2 bg-white"></div>
+                <div class="w-2 h-2 bg-white"></div>
+                <div class="w-2 h-2 bg-white"></div>
+                <div class="w-2 h-2 bg-white"></div>
+            </div>
+            <span class="text-white text-xl tracking-wide drop-shadow-sm">DADOS DO CADASTRO</span>
         </div>
     </div>
 
@@ -152,9 +150,9 @@
     </div>
 
     <!-- Footer -->
-    <div class="bg-custom-blue text-white text-center py-3 mt-auto">
-        <p class="text-sm">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
-        <p class="text-sm">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
+    <div class="bg-custom-blue text-white text-center py-4 mt-auto shadow-inner">
+        <p class="text-sm font-medium">© {{ current_year }} Exército Brasileiro - DFPC. Todos os direitos reservados.</p>
+        <p class="text-sm mt-1">SIGMA - Sistema de Gerenciamento Militar de Armas</p>
     </div>
 </body>
 </html>
