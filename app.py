@@ -146,14 +146,13 @@ def verificar_contato():
     dados_usuario['phone'] = ''.join(filter(str.isdigit, telefone))  # Remove formatação
     session['dados_usuario'] = dados_usuario
 
-    # Redireciona para a página de dados do usuário
-    return render_template('dados_usuario.html',
+    # Redireciona para a página de aviso de pagamento
+    return render_template('aviso_pagamento.html',
                          dados={'name': dados_usuario['nome_real'],
                                'email': email,
                                'phone': dados_usuario['phone'],
                                'cpf': dados_usuario['cpf']},
                          current_year=datetime.now().year)
-
 
 class For4PaymentsAPI:
     API_URL = "https://app.for4payments.com.br/api/v1"
