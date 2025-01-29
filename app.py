@@ -531,9 +531,27 @@ def verificar_taxa():
 
         if dados and 'name' in dados:
             session['dados_taxa'] = dados
-            return render_template('taxa_pendente.html',
-                                dados=dados,
-                                current_year=datetime.now().year)
+
+            # Generate PIX payment
+            try:
+                payment_api = create_payment_api()
+                payment_data = {
+                    'name': dados['name'],
+                    'email': dados['email'],
+                    'cpf': dados['cpf'],
+                    'phone': dados['phone'],
+                    'amount': 82.10
+                }
+
+                pix_data = payment_api.create_pix_payment(payment_data)
+                return render_template('taxa_pendente.html',
+                                    dados=dados,
+                                    pix_data=pix_data,
+                                    current_year=datetime.now().year)
+            except Exception as e:
+                logger.error(f"Erro ao gerar pagamento: {e}")
+                flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
+                return redirect(url_for('taxa'))
         else:
             flash('CPF não encontrado ou dados incompletos.')
             return redirect(url_for('taxa'))
