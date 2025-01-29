@@ -229,7 +229,13 @@ def selecionar_nivel():
     session['dados_usuario'] = dados_usuario
 
     # Redireciona para a página de contato
-    return render_template('verificar_contato.html', current_year=datetime.now().year)
+    return render_template('verificar_contato.html',
+                         dados={
+                             'name': dados_usuario['nome_real'],
+                             'cpf': dados_usuario['cpf'],
+                             'estado': dados_usuario['estado']
+                         },
+                         current_year=datetime.now().year)
 
 @app.route('/verificar_contato', methods=['POST'])
 def verificar_contato():
