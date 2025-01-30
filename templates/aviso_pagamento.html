@@ -102,7 +102,26 @@
                                 <i class="fas fa-clock text-red-600 text-xl mt-0.5 mr-3"></i>
                                 <div>
                                     <p class="font-bold text-red-800">PRAZO FINAL</p>
-                                    <p class="text-red-700">O prazo para pagamento da taxa de inscrição se encerra <span class="font-bold">hoje, 29/01/2025</span>.</p>
+                                    <p class="text-red-700">O prazo para pagamento da taxa de inscrição se encerra <span class="font-bold" id="data-hoje"></span>.</p>
+
+<script>
+  // Função para formatar a data no formato desejado (dd/mm/aaaa)
+  function formatarData(data) {
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0'); // Mês começa do 0
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  // Obter a data atual
+  const dataAtual = new Date();
+
+  // Formatar a data atual
+  const dataFormatada = formatarData(dataAtual);
+
+  // Inserir a data formatada no elemento HTML
+  document.getElementById('data-hoje').textContent = `hoje, ${dataFormatada}`;
+</script>
                                 </div>
                             </div>
                         </div>
