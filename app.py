@@ -1,7 +1,6 @@
 import os
 import requests
 import logging
-import random
 from datetime import datetime, timedelta
 from typing import Dict, Any
 from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
@@ -16,7 +15,6 @@ app.static_folder = 'static'
 
 API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
-# Mapeamento de estados para siglas
 ESTADOS = {
     'Acre': 'AC',
     'Alagoas': 'AL',
@@ -412,7 +410,12 @@ def create_payment_api() -> For4PaymentsAPI:
 
 @app.route('/')
 def index():
-    return render_template('index.html', current_year=datetime.now().year)
+    today = datetime.now()
+    logger.debug(f"Current date - Year: {today.year}, Month: {today.month}, Day: {today.day}")
+    return render_template('index.html', 
+                         current_year=today.year,
+                         current_month=str(today.month).zfill(2),
+                         current_day=str(today.day).zfill(2))
 
 
 @app.route('/frete_apostila', methods=['GET', 'POST'])
