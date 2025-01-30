@@ -424,6 +424,30 @@ def frete_apostila():
 
     if request.method == 'POST':
         try:
+            # Coleta os dados do formulário
+            endereco = {
+                'cep': request.form.get('cep'),
+                'logradouro': request.form.get('street'),
+                'numero': request.form.get('number'),
+                'complemento': request.form.get('complement'),
+                'bairro': request.form.get('neighborhood'),
+                'cidade': request.form.get('city'),
+                'estado': request.form.get('state')
+            }
+
+            # Valida se os campos obrigatórios foram preenchidos
+            campos_obrigatorios = ['cep', 'logradouro', 'numero', 'bairro', 'cidade', 'estado']
+            if not all(endereco.get(campo) for campo in campos_obrigatorios):
+                flash('Por favor, preencha todos os campos obrigatórios.')
+                return render_template('frete_apostila.html', 
+                                    user_data=user_data,
+                                    current_year=datetime.now().year)
+
+            # Salva o endereço na sessão
+            user_data['endereco'] = endereco
+            session['dados_usuario'] = user_data
+
+            # Gera o pagamento PIX
             payment_api = create_payment_api()
             payment_data = {
                 'name': user_data['nome_real'], 
@@ -440,9 +464,9 @@ def frete_apostila():
                                current_year=datetime.now().year)
 
         except Exception as e:
-            logger.error(f"Erro ao gerar pagamento: {e}")
-            flash('Erro ao gerar o pagamento. Por favor, tente novamente.')
-            return redirect(url_for('index'))
+            logger.error(f"Erro ao processar formulário: {e}")
+            flash('Erro ao processar o formulário. Por favor, tente novamente.')
+            return redirect(url_for('frete_apostila'))
 
     return render_template('frete_apostila.html', 
                          user_data=user_data,
