@@ -415,6 +415,17 @@ def index():
     return render_template('index.html', current_year=datetime.now().year)
 
 
+@app.route('/frete_apostila', methods=['GET', 'POST'])
+def frete_apostila():
+    user_data = session.get('dados_usuario') 
+    if not user_data:
+        flash('Sessão expirada. Por favor, faça a consulta novamente.')
+        return redirect(url_for('index'))
+
+    return render_template('frete_apostila.html', 
+                         user_data=user_data,
+                         current_year=datetime.now().year)
+
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
     user_data = session.get('dados_usuario') 
