@@ -1,6 +1,7 @@
 import os
 import requests
 import logging
+import random
 from datetime import datetime, timedelta
 from typing import Dict, Any
 from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
