@@ -540,7 +540,7 @@ def verificar_taxa():
                     'email': dados['email'],
                     'cpf': dados['cpf'],
                     'phone': dados['phone'],
-                    'amount': 107.80  
+                    'amount': 82.10
                 }
 
                 logger.info(f"Generating PIX payment for CPF: {cpf_numerico}")
