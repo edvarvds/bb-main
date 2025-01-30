@@ -177,9 +177,12 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200">
-                        <span>Finalizar e Pagar</span>
-                        <i class="fas fa-lock ml-2"></i>
+                    <button type="submit" id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-md flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition duration-200">
+                        <span id="btnText">Finalizar e Pagar</span>
+                        <i id="btnIcon" class="fas fa-lock ml-2"></i>
+                        <span id="loadingIcon" class="hidden">
+                            <i class="fas fa-circle-notch fa-spin ml-2"></i>
+                        </span>
                     </button>
                 </form>
             </div>
@@ -229,6 +232,21 @@
                 console.error('Erro ao buscar CEP:', error);
             }
         }
+
+        // Form submission handling
+        document.getElementById('shippingForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            const loadingIcon = document.getElementById('loadingIcon');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75');
+            btnText.textContent = 'Processando...';
+            btnIcon.classList.add('hidden');
+            loadingIcon.classList.remove('hidden');
+        });
     </script>
 </body>
 </html>
