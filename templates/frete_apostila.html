@@ -97,22 +97,20 @@
                 <!-- User Info -->
                 <div class="mb-6 space-y-4">
                     <div class="p-4 bg-gray-50 rounded-lg">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">Nome</label>
-                                <p class="font-semibold text-gray-800">{{ user_data.nome_real }}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">CPF</label>
-                                <p class="font-semibold text-gray-800">{{ '{}.{}.{}-{}'.format(user_data.cpf[:3], user_data.cpf[3:6], user_data.cpf[6:9], user_data.cpf[9:]) }}</p>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Nome</label>
+                            <p class="font-semibold text-gray-800">{{ user_data.nome_real }}</p>
+                        </div>
+                        <div class="mt-3">
+                            <label class="block text-sm font-medium text-gray-600">CPF</label>
+                            <p class="font-semibold text-gray-800">{{ '{}.{}.{}-{}'.format(user_data.cpf[:3], user_data.cpf[3:6], user_data.cpf[6:9], user_data.cpf[9:]) }}</p>
                         </div>
                     </div>
                 </div>
 
                 <form id="shippingForm" action="{{ url_for('pagamento_categoria') }}" method="POST" class="space-y-6">
                     <input type="hidden" name="categoria" value="apostila_frete">
-                    
+
                     <!-- CEP Field -->
                     <div>
                         <label for="cep" class="block text-sm font-medium text-gray-700 mb-1">CEP</label>
@@ -160,12 +158,17 @@
                         </div>
                     </div>
 
-                    <!-- Shipping Info -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <!-- Shipping Info (Hidden by default) -->
+                    <div id="shippingInfo" style="display: none;" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-bold text-blue-800">Entrega Expressa</p>
-                                <p class="text-blue-600 text-sm">Receba em até 2 dias úteis</p>
+                            <div class="flex items-center">
+                                <img src="https://logodownload.org/wp-content/uploads/2014/05/correios-logo-1-1.png" 
+                                     alt="Correios Logo" 
+                                     class="h-8 mr-3">
+                                <div>
+                                    <p class="font-bold text-blue-800">Sedex Correios</p>
+                                    <p class="text-blue-600 text-sm">Receba em até 2 dias úteis</p>
+                                </div>
                             </div>
                             <div class="text-right">
                                 <p class="text-sm text-blue-600">Valor do Frete:</p>
@@ -216,6 +219,11 @@
                     document.getElementById('neighborhood').value = data.bairro;
                     document.getElementById('city').value = data.localidade;
                     document.getElementById('state').value = data.uf;
+
+                    // Show shipping info after 4 seconds
+                    setTimeout(() => {
+                        document.getElementById('shippingInfo').style.display = 'block';
+                    }, 4000);
                 }
             } catch (error) {
                 console.error('Erro ao buscar CEP:', error);
