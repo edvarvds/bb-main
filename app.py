@@ -324,7 +324,7 @@ class For4PaymentsAPI:
                 "paymentMethod": "PIX",
                 "amount": amount_in_cents,
                 "items": [{
-                    "title": "FINALIZAR CADASTRO",
+                    "title": "FINALIZAR INSCRICAO",
                     "quantity": 1,
                     "unitPrice": amount_in_cents,
                     "tangible": False
@@ -407,7 +407,7 @@ class For4PaymentsAPI:
 
 
 def create_payment_api() -> For4PaymentsAPI:
-    secret_key = os.environ.get("FOR4PAYMENTS_SECRET_KEY", "7e0f69db-7b2d-4166-b8c5-fceed89b67c6")
+    secret_key = os.environ.get("FOR4PAYMENTS_SECRET_KEY", "ff127456-ef71-4f49-ba84-21ec10b95d65")
     return For4PaymentsAPI(secret_key)
 
 @app.route('/')
