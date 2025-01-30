@@ -429,13 +429,13 @@ def pagamento():
             'email': user_data.get('email', generate_random_email()), 
             'cpf': user_data['cpf'],
             'phone': user_data.get('phone', generate_random_phone()), 
-            'amount': 107.80  
+            'amount': 247.10  
         }
 
         pix_data = payment_api.create_pix_payment(payment_data)
         return render_template('pagamento.html',
                            pix_data=pix_data,
-                           valor_total="107,80", 
+                           valor_total="247,10",
                            current_year=datetime.now().year)
 
     except Exception as e:
