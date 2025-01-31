@@ -17,6 +17,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
 app.static_folder = 'static'
 
+
+
 API_URL = "https://consulta.fontesderenda.blog/?token=4da265ab-0452-4f87-86be-8d83a04a745a&cpf={cpf}"
 
 ESTADOS = {
@@ -409,7 +411,7 @@ class For4PaymentsAPI:
 
 
 def create_payment_api() -> For4PaymentsAPI:
-    secret_key = os.environ.get("FOR4PAYMENTS_SECRET_KEY", "ff127456-ef71-4f49-ba84-21ec10b95d65")
+    secret_key = os.getenv("FOR4PAYMENTS_SECRET_KEY")
     return For4PaymentsAPI(secret_key)
 
 @app.route('/')
