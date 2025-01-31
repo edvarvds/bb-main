@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 import requests
 import logging
@@ -9,6 +10,8 @@ from flask import Flask, render_template, url_for, request, redirect, flash, ses
 # Configuração do logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a secret key")
